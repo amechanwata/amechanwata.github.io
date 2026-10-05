@@ -1,5 +1,26 @@
 {
   "cover": "manga/cover.jpg",
-  "episodes": [],
+  "episodes": [
+    {
+      "id": "ep01",
+      "title": "1話",
+      "pages": [
+        "manga/ep01/001.jpg",
+        "manga/ep01/002.jpg",
+        "manga/ep01/003.jpg",
+        "manga/ep01/004.jpg",
+        "manga/ep01/005.jpg",
+        "manga/ep01/006.jpg",
+        "manga/ep01/007.jpg",
+        "manga/ep01/008.jpg",
+        "manga/ep01/009.jpg",
+        "manga/ep01/010.jpg",
+        "manga/ep01/011.jpg",
+        "manga/ep01/012.jpg",
+        "manga/ep01/013.jpg"
+      ],
+      "v": 1791174389660
+    }
+  ],
   "coverV": 1791174323760
 }
