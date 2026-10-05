@@ -27,6 +27,20 @@
       "memo": "",
       "thumb": "omake/k02_t.jpg",
       "v": 1791241295741
+    },
+    {
+      "id": "k03",
+      "title": "半分こ",
+      "date": "2026.10.06",
+      "cast": [
+        "l",
+        "m"
+      ],
+      "img": "omake/k03.jpg",
+      "alt": "",
+      "memo": "",
+      "thumb": "omake/k03_t.jpg",
+      "v": 1791241507309
     }
   ]
 }
