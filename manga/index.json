@@ -22,6 +22,31 @@
         "manga/ep01/015.jpg"
       ],
       "v": 1791181328412
+    },
+    {
+      "id": "ep02",
+      "title": "2話",
+      "pages": [
+        "manga/ep02/001.jpg",
+        "manga/ep02/002.jpg",
+        "manga/ep02/003.jpg",
+        "manga/ep02/004.jpg",
+        "manga/ep02/005.jpg",
+        "manga/ep02/006.jpg",
+        "manga/ep02/007.jpg",
+        "manga/ep02/008.jpg",
+        "manga/ep02/009.jpg",
+        "manga/ep02/010.jpg",
+        "manga/ep02/011.jpg",
+        "manga/ep02/012.jpg",
+        "manga/ep02/013.jpg",
+        "manga/ep02/014.jpg",
+        "manga/ep02/015.jpg",
+        "manga/ep02/016.jpg",
+        "manga/ep02/017.jpg",
+        "manga/ep02/018.jpg"
+      ],
+      "v": 1791198493382
     }
   ],
   "coverV": 1791174323760
