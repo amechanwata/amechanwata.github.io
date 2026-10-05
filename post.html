@@ -7,19 +7,19 @@
 <title>書斎</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --night:#151a16; --moss:#232b24; --moss2:#2c362d; --linen:#ebe3d4; --linen-dim:#b9b0a0;
-  --rose:#b48a8c; --candle:#cfae6e; --ink:#2a2420;
-  --serif:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
+  --night:#1E1B24; --moss:#2A2630; --moss2:#332E3B; --linen:#F6F2F7; --linen-dim:#B8B0C4;
+  --rose:#8E80A8; --candle:#D6C8F0; --ink:#2E2538;
+  --serif:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
 }
 *,*::before,*::after{box-sizing:inherit}
 html,body{margin:0;min-height:100%}
-body{background:var(--night);color:var(--linen);font-family:var(--serif)}
+body{background:var(--night);color:#E8E2EE;font-family:var(--serif)}
 button,input,textarea{font:inherit;color:inherit}
 button{background:none;border:0;cursor:pointer}
 :focus-visible{outline:2px solid var(--candle);outline-offset:2px}
@@ -27,7 +27,7 @@ button{background:none;border:0;cursor:pointer}
 h1{font-size:1.1rem;font-weight:600;letter-spacing:.3em;color:var(--candle);margin:.4rem 0 1.4rem}
 .view{display:none}.view.on{display:block}
 label{display:block;font-size:.85rem;color:var(--linen-dim);margin:1rem 0 .35rem}
-input[type=text],input[type=password],textarea{width:100%;background:var(--moss);border:1px solid rgba(235,227,212,.18);padding:.75rem .8rem;border-radius:2px;font-size:16px}
+input[type=text],input[type=password],textarea{width:100%;background:var(--moss);border:1px solid rgba(232,226,238,.18);padding:.75rem .8rem;border-radius:2px;font-size:16px}
 textarea{min-height:58vh;line-height:1.9;resize:vertical}
 .btn{display:inline-block;padding:.75rem 1.4rem;border:1px solid var(--candle);color:var(--candle);letter-spacing:.15em;font-size:.95rem}
 .btn.fill{background:var(--candle);color:var(--night)}
@@ -37,30 +37,30 @@ textarea{min-height:58vh;line-height:1.9;resize:vertical}
 .status{font-size:.88rem;min-height:1.6em;margin:.8rem 0;color:var(--candle)}
 .status.err{color:var(--rose)}
 .list{list-style:none;margin:1.2rem 0;padding:0}
-.list li{display:flex;align-items:center;gap:.6rem;border-bottom:1px solid rgba(235,227,212,.12)}
+.list li{display:flex;align-items:center;gap:.6rem;border-bottom:1px solid rgba(232,226,238,.12)}
 .list .t{flex:1;padding:.9rem 0;text-align:left}
 .list .no{color:var(--candle);font-size:.85rem;margin-right:.6rem}
 .list .mv{color:var(--linen-dim);padding:.5rem;font-size:.9rem}
 .top{display:flex;justify-content:space-between;align-items:center}
 .link{color:var(--linen-dim);font-size:.85rem;text-decoration:underline;text-underline-offset:4px}
 .tools{display:flex;gap:.5rem;flex-wrap:wrap;margin:.6rem 0}
-.tools button{border:1px solid rgba(235,227,212,.25);padding:.4rem .8rem;font-size:.85rem;color:var(--linen-dim)}
+.tools button{border:1px solid rgba(232,226,238,.25);padding:.4rem .8rem;font-size:.85rem;color:var(--linen-dim)}
 .dock{position:fixed;left:0;right:0;bottom:0;background:var(--moss2);padding:.7rem 1rem calc(.7rem + env(safe-area-inset-bottom,0px));display:flex;gap:.6rem;justify-content:flex-end;box-shadow:0 -10px 30px rgba(0,0,0,.4)}
 .dock .grow{flex:1;align-self:center;font-size:.8rem;color:var(--linen-dim);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.tabs{display:flex;gap:0;margin:0 0 1.2rem;border-bottom:1px solid rgba(235,227,212,.18)}
+.tabs{display:flex;gap:0;margin:0 0 1.2rem;border-bottom:1px solid rgba(232,226,238,.18)}
 .tabs button{padding:.6rem 1.2rem;color:var(--linen-dim);letter-spacing:.2em;border-bottom:2px solid transparent;margin-bottom:-1px}
 .tabs button[aria-current="true"]{color:var(--candle);border-color:var(--candle)}
 .row-btns{display:flex;gap:.6rem;flex-wrap:wrap}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:.7rem;margin:1rem 0}
-.cell{position:relative;background:var(--moss);border:1px solid rgba(235,227,212,.15)}
+.cell{position:relative;background:var(--moss);border:1px solid rgba(232,226,238,.15)}
 .cell img{display:block;width:100%;aspect-ratio:707/1000;object-fit:cover;background:var(--linen)}
-.cell .num{position:absolute;top:.25rem;left:.25rem;background:rgba(21,26,22,.85);color:var(--candle);font-size:.72rem;padding:.1rem .4rem}
+.cell .num{position:absolute;top:.25rem;left:.25rem;background:rgba(30,27,36,.85);color:var(--candle);font-size:.72rem;padding:.1rem .4rem}
 .cell .new{position:absolute;top:.25rem;right:.25rem;background:var(--rose);color:var(--night);font-size:.65rem;padding:.1rem .35rem}
 .cell .ops{display:flex;justify-content:space-between}
 .cell .ops button{flex:1;padding:.45rem 0;font-size:.85rem;color:var(--linen-dim)}
 .cell .ops button:disabled{opacity:.25}
 .cell .ops button.x{color:var(--rose)}
-.cover-pv{width:120px;aspect-ratio:707/1000;object-fit:cover;background:var(--moss);display:block;margin:.6rem 0;border:1px solid rgba(207,174,110,.4)}
+.cover-pv{width:120px;aspect-ratio:707/1000;object-fit:cover;background:var(--moss);display:block;margin:.6rem 0;border:1px solid rgba(214,200,240,.4)}
 .bar-prog{height:3px;background:var(--moss);margin:.4rem 0}.bar-prog i{display:block;height:100%;width:0;background:var(--candle);transition:width .2s}
 /* プレビュー（小説ページと同じ組版） */
 .pv{position:fixed;inset:0;z-index:20;background:var(--night);display:none;padding:calc(.8rem + env(safe-area-inset-top,0px)) .6rem calc(4rem + env(safe-area-inset-bottom,0px))}

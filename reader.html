@@ -8,18 +8,18 @@
 <title>書架 | 光の届かぬ庭で、ティータイムを</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
 /* ===== 色とかたち ===== */
 :root{
-  --night:#151a16;      /* 光の届かぬ庭 */
-  --moss:#232b24;       /* 苔むした壁 */
-  --linen:#ebe3d4;      /* 包帯／紙 */
-  --linen-dim:#b9b0a0;
-  --rose:#b48a8c;       /* 色褪せた薔薇 */
-  --candle:#cfae6e;     /* 燭台の灯 */
-  --ink:#2a2420;
-  --serif:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho","YuMincho",serif;
+  --night:#1E1B24;      /* 光の届かぬ庭 */
+  --moss:#2A2630;       /* 苔むした壁 */
+  --linen:#F6F2F7;      /* 包帯／紙 */
+  --linen-dim:#B8B0C4;
+  --rose:#8E80A8;       /* 色褪せた薔薇 */
+  --candle:#D6C8F0;     /* 燭台の灯 */
+  --ink:#2E2538;
+  --serif:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","YuMincho",serif;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
@@ -28,8 +28,8 @@
 html,body{height:100%;margin:0}
 body{
   background:var(--night);
-  background-image:radial-gradient(ellipse 60% 50% at 50% 42%, #2a2a20 0%, transparent 70%);
-  color:var(--linen);font-family:var(--serif);
+  background-image:radial-gradient(ellipse 60% 50% at 50% 42%, #332C40 0%, transparent 70%);
+  color:#E8E2EE;font-family:var(--serif);
   overflow:hidden;-webkit-tap-highlight-color:transparent;
 }
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
@@ -40,12 +40,12 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .book{
   position:relative;width:min(62vw,280px);aspect-ratio:707/1000;
   background:var(--moss);border-radius:2px 6px 6px 2px;
-  box-shadow:inset 10px 0 18px -8px rgba(0,0,0,.6), 0 30px 60px -20px rgba(0,0,0,.8), 0 0 80px -10px rgba(207,174,110,.18);
+  box-shadow:inset 10px 0 18px -8px rgba(0,0,0,.6), 0 30px 60px -20px rgba(0,0,0,.8), 0 0 80px -10px rgba(214,200,240,.18);
   display:flex;align-items:center;justify-content:center;overflow:hidden;
 }
 .book img{width:100%;height:100%;object-fit:cover}
 .book .cover-text{writing-mode:vertical-rl;font-size:1.35rem;font-weight:600;letter-spacing:.35em;line-height:2.2;color:var(--linen)}
-.book::after{content:"";position:absolute;inset:0;border:1px solid rgba(207,174,110,.35);margin:10px;pointer-events:none}
+.book::after{content:"";position:absolute;inset:0;border:1px solid rgba(214,200,240,.35);margin:10px;pointer-events:none}
 .shelf-title{font-size:.9rem;letter-spacing:.3em;color:var(--linen-dim);margin:0}
 .shelf-actions{display:flex;flex-direction:column;align-items:center;gap:.9rem}
 .btn-open{
@@ -55,7 +55,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .btn-open:hover{background:var(--candle);color:var(--night)}
 .resume{font-size:.82rem;color:var(--linen-dim);text-decoration:underline;text-underline-offset:4px}
 .ep-list{list-style:none;margin:0;padding:0;width:min(100%,320px)}
-.ep-list li button{width:100%;display:flex;justify-content:space-between;gap:1rem;padding:.8rem .2rem;border-bottom:1px solid rgba(235,227,212,.12);text-align:left;font-size:.95rem}
+.ep-list li button{width:100%;display:flex;justify-content:space-between;gap:1rem;padding:.8rem .2rem;border-bottom:1px solid rgba(232,226,238,.12);text-align:left;font-size:.95rem}
 .ep-list li button span:last-child{color:var(--linen-dim);font-size:.8rem;white-space:nowrap}
 .back-site{font-size:.8rem;color:var(--linen-dim);text-decoration:none;letter-spacing:.1em}
 
@@ -88,9 +88,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 
 /* 上下のバー */
 .bar{position:fixed;left:0;right:0;z-index:5;display:flex;align-items:center;gap:1rem;padding:0 1rem;
-  background:linear-gradient(var(--night),rgba(21,26,22,.85));transition:opacity .3s,transform .3s}
+  background:linear-gradient(var(--night),rgba(30,27,36,.85));transition:opacity .3s,transform .3s}
 .bar.top{top:0;padding-top:env(safe-area-inset-top,0px);height:calc(3rem + env(safe-area-inset-top,0px));justify-content:space-between}
-.bar.bottom{bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);height:calc(3.4rem + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(21,26,22,.85),var(--night))}
+.bar.bottom{bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);height:calc(3.4rem + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(30,27,36,.85),var(--night))}
 .hide-ui .bar.top{opacity:0;transform:translateY(-100%);pointer-events:none}
 .hide-ui .bar.bottom{opacity:0;transform:translateY(100%);pointer-events:none}
 .ep-name{font-size:.88rem;letter-spacing:.12em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -100,13 +100,13 @@ input[type=range]{flex:1;direction:rtl;accent-color:var(--candle)}
 .pno{font-size:.8rem;color:var(--linen-dim);min-width:5.5em;text-align:right;font-variant-numeric:tabular-nums}
 
 /* 目次 */
-.toc{position:fixed;inset:0;z-index:10;display:none;background:rgba(10,12,10,.7)}
+.toc{position:fixed;inset:0;z-index:10;display:none;background:rgba(14,12,18,.7)}
 .toc.on{display:block}
 .toc-panel{position:absolute;right:0;top:0;bottom:0;width:min(86vw,340px);background:var(--moss);padding:calc(1.5rem + env(safe-area-inset-top,0px)) 1.4rem 1.5rem;overflow-y:auto;box-shadow:-20px 0 40px rgba(0,0,0,.5)}
 .toc h2{font-size:1rem;letter-spacing:.3em;font-weight:600;margin:0 0 1rem;color:var(--candle)}
 .toc .ep-list li button[aria-current="true"]{color:var(--candle)}
 
-.toast{position:fixed;left:50%;top:45%;transform:translate(-50%,-50%);z-index:8;background:rgba(35,43,36,.95);border:1px solid rgba(207,174,110,.4);padding:1rem 1.6rem;font-size:.95rem;letter-spacing:.15em;opacity:0;pointer-events:none;transition:opacity .4s}
+.toast{position:fixed;left:50%;top:45%;transform:translate(-50%,-50%);z-index:8;background:rgba(42,38,48,.95);border:1px solid rgba(214,200,240,.4);padding:1rem 1.6rem;font-size:.95rem;letter-spacing:.15em;opacity:0;pointer-events:none;transition:opacity .4s}
 .toast.on{opacity:1}
 </style>
 </head>
@@ -170,13 +170,13 @@ let ep = 0, view = 0, views = [], twoUp = false;
 // 仮ページ（SVG）
 function dummyPage(e, n){
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 707 1000'>
-  <rect width='707' height='1000' fill='#ebe3d4'/>
-  <g fill='none' stroke='#2a2420' stroke-opacity='.55' stroke-width='3'>
+  <rect width='707' height='1000' fill='#F6F2F7'/>
+  <g fill='none' stroke='#2E2538' stroke-opacity='.55' stroke-width='3'>
     <rect x='40' y='40' width='627' height='300'/>
     <rect x='40' y='360' width='300' height='280'/><rect x='360' y='360' width='307' height='280'/>
     <rect x='40' y='660' width='627' height='300'/>
   </g>
-  <text x='353' y='520' text-anchor='middle' font-family='serif' font-size='40' fill='#2a2420' fill-opacity='.45'>第${e+1}話　${n}頁</text>
+  <text x='353' y='520' text-anchor='middle' font-family='serif' font-size='40' fill='#2E2538' fill-opacity='.45'>第${e+1}話　${n}頁</text>
   </svg>`;
   return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 }
