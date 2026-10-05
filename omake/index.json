@@ -1,0 +1,18 @@
+{
+  "strips": [
+    {
+      "id": "k01",
+      "title": "雪",
+      "date": "2026.10.06",
+      "cast": [
+        "l",
+        "m"
+      ],
+      "img": "omake/k01.jpg",
+      "alt": "",
+      "memo": "",
+      "thumb": "omake/k01_t.jpg",
+      "v": 1791236809155
+    }
+  ]
+}
