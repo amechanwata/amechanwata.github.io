@@ -85,6 +85,21 @@
         "manga/ep04/008.jpg"
       ],
       "v": 1791198843899
+    },
+    {
+      "id": "ep05",
+      "title": "5話",
+      "pages": [
+        "manga/ep05/001.jpg",
+        "manga/ep05/002.jpg",
+        "manga/ep05/003.jpg",
+        "manga/ep05/004.jpg",
+        "manga/ep05/005.jpg",
+        "manga/ep05/006.jpg",
+        "manga/ep05/007.jpg",
+        "manga/ep05/008.jpg"
+      ],
+      "v": 1791198907399
     }
   ],
   "coverV": 1791174323760
