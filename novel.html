@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>小説を読む | 光の届かぬ庭で、ティータイムを</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#151a16; --moss:#232b24; --linen:#ebe3d4; --linen-dim:#b9b0a0;
+  --rose:#b48a8c; --candle:#cfae6e; --ink:#2a2420;
+  --serif:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho","YuMincho",serif;
+  --fs:18px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%;margin:0}
+body{background:var(--night);background-image:radial-gradient(ellipse 60% 50% at 50% 40%,#2a2a20 0%,transparent 70%);color:var(--linen);font-family:var(--serif);overflow:hidden}
+button,a{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--candle);outline-offset:3px}
+
+/* 目次画面 */
+#shelf{position:absolute;inset:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:3.5rem 1.5rem 3rem;gap:2rem}
+.title-v{writing-mode:vertical-rl;font-size:1.6rem;font-weight:600;letter-spacing:.35em;line-height:2.2;margin:0;height:13em}
+.lead{font-size:.85rem;letter-spacing:.25em;color:var(--linen-dim);margin:0}
+.ep-list{list-style:none;margin:0;padding:0;width:min(100%,360px)}
+.ep-list button{width:100%;display:flex;gap:1rem;padding:.9rem .2rem;border-bottom:1px solid rgba(235,227,212,.12);text-align:left;font-size:.98rem}
+.ep-list button:hover{color:var(--candle)}
+.ep-list .no{color:var(--candle);min-width:3.2em;font-size:.85rem;padding-top:.15em}
+.resume{padding:.8rem 2rem;border:1px solid var(--candle);color:var(--candle);letter-spacing:.2em}
+.resume:hover{background:var(--candle);color:var(--night)}
+.empty,.err{color:var(--linen-dim);font-size:.9rem;text-align:center;line-height:2}
+.foot{display:flex;gap:1.5rem;font-size:.8rem;letter-spacing:.1em}
+.foot a{color:var(--linen-dim);text-decoration:none}
+
+/* 読書画面 */
+#reader{position:absolute;inset:0;display:none}
+#reader.on{display:block}
+.bar{position:fixed;left:0;right:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:0 1rem;transition:opacity .3s,transform .3s}
+.bar.top{top:0;padding-top:env(safe-area-inset-top,0px);height:calc(3rem + env(safe-area-inset-top,0px));background:linear-gradient(var(--night),rgba(21,26,22,.9))}
+.bar.bottom{bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);height:calc(3rem + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(21,26,22,.9),var(--night))}
+.hide-ui .bar.top{opacity:0;transform:translateY(-100%);pointer-events:none}
+.hide-ui .bar.bottom{opacity:0;transform:translateY(100%);pointer-events:none}
+.bar button{font-size:.85rem;letter-spacing:.1em;color:var(--linen-dim);padding:.5rem .2rem;white-space:nowrap}
+.bar button:hover,.bar button[aria-pressed="true"]{color:var(--candle)}
+.ep-name{font-size:.88rem;letter-spacing:.12em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog{font-size:.78rem;color:var(--linen-dim);font-variant-numeric:tabular-nums}
+
+.paper{position:absolute;top:calc(3rem + env(safe-area-inset-top,0px));bottom:calc(3rem + env(safe-area-inset-bottom,0px));left:max(.6rem,3vw);right:max(.6rem,3vw);
+  background:var(--linen);color:var(--ink);box-shadow:0 30px 60px -20px rgba(0,0,0,.8),0 0 90px -20px rgba(207,174,110,.2)}
+.sheet{position:absolute;inset:0;padding:2.2rem 1.6rem;font-size:var(--fs);line-height:1.95;letter-spacing:.04em;
+  font-feature-settings:"palt" 0;-webkit-overflow-scrolling:touch}
+.v .sheet{writing-mode:vertical-rl;overflow-x:auto;overflow-y:hidden}
+.h .sheet{writing-mode:horizontal-tb;overflow-y:auto;overflow-x:hidden;padding:2rem max(1.4rem,calc((100% - 34em)/2));line-height:2}
+.sheet h1{font-size:1.25em;font-weight:600;letter-spacing:.2em;margin:0 0 0 2.5em}
+.h .sheet h1{margin:0 0 2.5em}
+.sheet p{margin:0;text-indent:1em}
+.sheet p.blank{height:1em;width:1em}
+.v .sheet p.blank{height:auto}
+.sheet p.break{text-indent:0;text-align:center;color:var(--rose);letter-spacing:.6em}
+.sheet p.talk{text-indent:0}
+.bt{font-style:normal;-webkit-text-emphasis:filled sesame;text-emphasis:filled sesame}
+.h .bt{-webkit-text-emphasis-position:over right;text-emphasis-position:over right}
+.tcy{-webkit-text-combine:horizontal;text-combine-upright:all}
+rt{font-size:.5em;letter-spacing:0}
+.end{text-indent:0;margin:0 3em 0 0;display:flex;gap:1.5em;align-items:flex-start}
+.h .end{margin:3em 0 0}
+.end button{border:1px solid var(--ink);color:var(--ink);padding:.6em .9em;font-size:.85em;letter-spacing:.2em}
+.end button:hover{background:var(--ink);color:var(--linen)}
+.end .fin{color:var(--rose);letter-spacing:.4em;font-size:.9em}
+
+.tap{position:absolute;top:0;bottom:0;z-index:2;background:none;border:0}
+.tap.next{left:0;width:22%} .tap.prev{right:0;width:22%}
+.h .tap{display:none}
+
+/* 設定 */
+.panel{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--moss);padding:1.2rem 1.4rem calc(1.4rem + env(safe-area-inset-bottom,0px));display:none;flex-direction:column;gap:1rem;box-shadow:0 -20px 40px rgba(0,0,0,.5)}
+.panel.on{display:flex}
+.row{display:flex;align-items:center;justify-content:space-between;gap:1rem;font-size:.9rem}
+.seg{display:flex;border:1px solid rgba(207,174,110,.5)}
+.seg button{padding:.45rem .9rem;font-size:.85rem;color:var(--linen-dim)}
+.seg button[aria-pressed="true"]{background:var(--candle);color:var(--night)}
+</style>
+</head>
+<body>
+
+<section id="shelf" aria-label="目次">
+  <h1 class="title-v">光の届かぬ庭で、<br>ティータイムを</h1>
+  <p class="lead">小説で読む</p>
+  <button class="resume" id="resumeBtn" hidden>続きから読む</button>
+  <ul class="ep-list" id="list"></ul>
+  <div class="foot"><a href="index.html">表紙へ戻る</a><a href="reader.html">漫画で読む</a></div>
+</section>
+
+<section id="reader" class="v" aria-label="本文">
+  <header class="bar top">
+    <button id="closeBtn">目次</button>
+    <span class="ep-name" id="epName"></span>
+    <button id="setBtn">文字</button>
+  </header>
+  <div class="paper">
+    <article class="sheet" id="sheet" tabindex="0"></article>
+    <button class="tap next" id="tapNext" aria-label="次へ"></button>
+    <button class="tap prev" id="tapPrev" aria-label="前へ"></button>
+  </div>
+  <footer class="bar bottom">
+    <button id="uiBtn">没入</button>
+    <span class="prog" id="prog"></span>
+  </footer>
+</section>
+
+<div class="panel" id="panel" role="dialog" aria-label="表示設定">
+  <div class="row"><span>組み方</span><div class="seg" id="segDir"><button data-v="v">縦書き</button><button data-v="h">横書き</button></div></div>
+  <div class="row"><span>文字の大きさ</span><div class="seg" id="segFs"><button data-v="15">小</button><button data-v="18">中</button><button data-v="21">大</button><button data-v="24">特大</button></div></div>
+  <div class="row"><span></span><button id="panelClose" style="color:var(--candle)">閉じる</button></div>
+</div>
+
+<script>
+const KEY="hikari-garden-novel";
+const $=id=>document.getElementById(id);
+let index=[], cur=-1, saveT;
+const pref=(()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}})();
+pref.dir=pref.dir||"v"; pref.fs=pref.fs||18;
+function savePref(){try{localStorage.setItem(KEY,JSON.stringify(pref))}catch(e){}}
+
+/* ===== カクヨム・なろう記法 → HTML ===== */
+function parse(src){
+  const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  return src.replace(/\r\n?/g,"\n").split("\n").map(line=>{
+    if(!line.trim()) return '<p class="blank"></p>';
+    let t=esc(line);
+    if(/^\s*[◇◆＊*※†✿❀・－―\-\s]+\s*$/.test(line)&&line.trim().length<=12) return `<p class="break">${t.trim()}</p>`;
+    t=t.replace(/《《(.+?)》》/g,'<em class="bt">$1</em>');
+    t=t.replace(/[|｜]([^|｜《]+?)《(.+?)》/g,'<ruby>$1<rt>$2</rt></ruby>');
+    t=t.replace(/([々〆ヵヶ\u4E00-\u9FFF]+)《(.+?)》/g,'<ruby>$1<rt>$2</rt></ruby>');
+    t=t.replace(/(^|[^0-9A-Za-z])([0-9]{1,2}|!!|!\?|\?!)(?![0-9A-Za-z])/g,'$1<span class="tcy">$2</span>');
+    const talk=/^[「『（(〈]/.test(line.trim());
+    return `<p${talk?' class="talk"':''}>${t}</p>`;
+  }).join("");
+}
+
+/* ===== 読み込み ===== */
+async function loadIndex(){
+  try{
+    const r=await fetch(`novel/index.json?t=${Date.now()}`);
+    if(!r.ok) throw 0;
+    index=(await r.json()).episodes||[];
+  }catch(e){ index=[]; }
+  $("list").innerHTML = index.length
+    ? index.map((e,i)=>`<li><button data-i="${i}"><span class="no">第${i+1}話</span><span>${e.title}</span></button></li>`).join("")
+    : '<li class="empty">まだ話がありません。<br>投稿画面から最初の話を追加してください。</li>';
+  const b=pref.mark;
+  if(b && index.findIndex(e=>e.id===b.id)>=0){
+    const i=index.findIndex(e=>e.id===b.id);
+    $("resumeBtn").hidden=false; $("resumeBtn").textContent=`続きから（第${i+1}話）`;
+    $("resumeBtn").onclick=()=>open(i,b.pos);
+  }
+}
+async function open(i,pos=0){
+  cur=i; const e=index[i];
+  $("epName").textContent=`第${i+1}話　${e.title}`;
+  $("sheet").innerHTML='<p class="empty">ひらいています…</p>';
+  $("shelf").style.display="none"; $("reader").classList.add("on");
+  try{
+    const r=await fetch(`novel/${e.id}.txt?t=${Date.now()}`); if(!r.ok) throw 0;
+    const txt=await r.text();
+    const next = i<index.length-1 ? `<button id="nextEp">次の話へ</button>` : `<span class="fin">了</span>`;
+    $("sheet").innerHTML=`<h1>${e.title}</h1>${parse(txt)}<div class="end">${next}<button id="toList">目次へ</button></div>`;
+    $("toList").onclick=close;
+    if($("nextEp")) $("nextEp").onclick=()=>open(i+1);
+  }catch(err){ $("sheet").innerHTML='<p class="err">本文を読み込めませんでした。<br>ファイルがあるか確認してください。</p>'; }
+  requestAnimationFrame(()=>{ setPos(pos); $("sheet").focus({preventScroll:true}); });
+}
+function close(){ $("reader").classList.remove("on"); $("shelf").style.display=""; loadIndex(); }
+
+/* ===== 位置（0〜1）===== */
+function getPos(){ const s=$("sheet");
+  if(pref.dir==="v"){ const m=s.scrollWidth-s.clientWidth; return m>0?Math.abs(s.scrollLeft)/m:0; }
+  const m=s.scrollHeight-s.clientHeight; return m>0?s.scrollTop/m:0; }
+function setPos(p){ const s=$("sheet");
+  if(pref.dir==="v") s.scrollLeft=-(s.scrollWidth-s.clientWidth)*p;
+  else s.scrollTop=(s.scrollHeight-s.clientHeight)*p; showProg(); }
+function showProg(){ $("prog").textContent=Math.round(getPos()*100)+"%"; }
+$("sheet").addEventListener("scroll",()=>{ showProg(); clearTimeout(saveT);
+  saveT=setTimeout(()=>{ if(cur>=0){ pref.mark={id:index[cur].id,pos:getPos()}; savePref(); } },400); },{passive:true});
+
+/* ===== めくる（縦書き：左をタップで次へ）===== */
+function turn(d){ const s=$("sheet"), smooth=matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth";
+  if(pref.dir==="v") s.scrollBy({left:-d*s.clientWidth*.9,behavior:smooth});
+  else s.scrollBy({top:d*s.clientHeight*.9,behavior:smooth}); }
+$("tapNext").onclick=()=>turn(1);
+$("tapPrev").onclick=()=>turn(-1);
+document.addEventListener("keydown",e=>{
+  if(!$("reader").classList.contains("on")) return;
+  if(pref.dir==="v"){ if(e.key==="ArrowLeft"){e.preventDefault();turn(1)} if(e.key==="ArrowRight"){e.preventDefault();turn(-1)} }
+  if(e.key===" "){e.preventDefault();turn(e.shiftKey?-1:1)}
+  if(e.key==="Escape") close();
+});
+
+/* ===== 設定 ===== */
+function applyPref(){
+  const p=getPos();
+  $("reader").className=($("reader").classList.contains("on")?"on ":"")+pref.dir+($("reader").classList.contains("hide-ui")?" hide-ui":"");
+  document.documentElement.style.setProperty("--fs",pref.fs+"px");
+  document.querySelectorAll("#segDir button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===pref.dir));
+  document.querySelectorAll("#segFs button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.v===+pref.fs));
+  requestAnimationFrame(()=>setPos(p));
+}
+$("segDir").onclick=e=>{const b=e.target.closest("button"); if(b){pref.dir=b.dataset.v; savePref(); applyPref();}};
+$("segFs").onclick=e=>{const b=e.target.closest("button"); if(b){pref.fs=+b.dataset.v; savePref(); applyPref();}};
+$("setBtn").onclick=()=>$("panel").classList.toggle("on");
+$("panelClose").onclick=()=>$("panel").classList.remove("on");
+$("uiBtn").onclick=()=>{ $("reader").classList.add("hide-ui"); };
+$("sheet").addEventListener("dblclick",()=>$("reader").classList.toggle("hide-ui"));
+$("reader").addEventListener("click",e=>{ if($("reader").classList.contains("hide-ui") && !e.target.closest(".tap")) $("reader").classList.remove("hide-ui"); });
+$("closeBtn").onclick=close;
+$("list").onclick=e=>{const b=e.target.closest("[data-i]"); if(b) open(+b.dataset.i);};
+
+applyPref(); loadIndex();
+</script>
+</body>
+</html>

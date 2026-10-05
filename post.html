@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>書斎</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#151a16; --moss:#232b24; --moss2:#2c362d; --linen:#ebe3d4; --linen-dim:#b9b0a0;
+  --rose:#b48a8c; --candle:#cfae6e; --ink:#2a2420;
+  --serif:"Shippori Mincho B1","Hiragino Mincho ProN","Yu Mincho",serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0;min-height:100%}
+body{background:var(--night);color:var(--linen);font-family:var(--serif)}
+button,input,textarea{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--candle);outline-offset:2px}
+.wrap{max-width:640px;margin:0 auto;padding:1.4rem 1.1rem 6rem}
+h1{font-size:1.1rem;font-weight:600;letter-spacing:.3em;color:var(--candle);margin:.4rem 0 1.4rem}
+.view{display:none}.view.on{display:block}
+label{display:block;font-size:.85rem;color:var(--linen-dim);margin:1rem 0 .35rem}
+input[type=text],input[type=password],textarea{width:100%;background:var(--moss);border:1px solid rgba(235,227,212,.18);padding:.75rem .8rem;border-radius:2px;font-size:16px}
+textarea{min-height:58vh;line-height:1.9;resize:vertical}
+.btn{display:inline-block;padding:.75rem 1.4rem;border:1px solid var(--candle);color:var(--candle);letter-spacing:.15em;font-size:.95rem}
+.btn.fill{background:var(--candle);color:var(--night)}
+.btn:disabled{opacity:.4}
+.btn.danger{border-color:var(--rose);color:var(--rose)}
+.note{font-size:.82rem;color:var(--linen-dim);line-height:1.9}
+.status{font-size:.88rem;min-height:1.6em;margin:.8rem 0;color:var(--candle)}
+.status.err{color:var(--rose)}
+.list{list-style:none;margin:1.2rem 0;padding:0}
+.list li{display:flex;align-items:center;gap:.6rem;border-bottom:1px solid rgba(235,227,212,.12)}
+.list .t{flex:1;padding:.9rem 0;text-align:left}
+.list .no{color:var(--candle);font-size:.85rem;margin-right:.6rem}
+.list .mv{color:var(--linen-dim);padding:.5rem;font-size:.9rem}
+.top{display:flex;justify-content:space-between;align-items:center}
+.link{color:var(--linen-dim);font-size:.85rem;text-decoration:underline;text-underline-offset:4px}
+.tools{display:flex;gap:.5rem;flex-wrap:wrap;margin:.6rem 0}
+.tools button{border:1px solid rgba(235,227,212,.25);padding:.4rem .8rem;font-size:.85rem;color:var(--linen-dim)}
+.dock{position:fixed;left:0;right:0;bottom:0;background:var(--moss2);padding:.7rem 1rem calc(.7rem + env(safe-area-inset-bottom,0px));display:flex;gap:.6rem;justify-content:flex-end;box-shadow:0 -10px 30px rgba(0,0,0,.4)}
+.dock .grow{flex:1;align-self:center;font-size:.8rem;color:var(--linen-dim);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.tabs{display:flex;gap:0;margin:0 0 1.2rem;border-bottom:1px solid rgba(235,227,212,.18)}
+.tabs button{padding:.6rem 1.2rem;color:var(--linen-dim);letter-spacing:.2em;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-current="true"]{color:var(--candle);border-color:var(--candle)}
+.row-btns{display:flex;gap:.6rem;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:.7rem;margin:1rem 0}
+.cell{position:relative;background:var(--moss);border:1px solid rgba(235,227,212,.15)}
+.cell img{display:block;width:100%;aspect-ratio:707/1000;object-fit:cover;background:var(--linen)}
+.cell .num{position:absolute;top:.25rem;left:.25rem;background:rgba(21,26,22,.85);color:var(--candle);font-size:.72rem;padding:.1rem .4rem}
+.cell .new{position:absolute;top:.25rem;right:.25rem;background:var(--rose);color:var(--night);font-size:.65rem;padding:.1rem .35rem}
+.cell .ops{display:flex;justify-content:space-between}
+.cell .ops button{flex:1;padding:.45rem 0;font-size:.85rem;color:var(--linen-dim)}
+.cell .ops button:disabled{opacity:.25}
+.cell .ops button.x{color:var(--rose)}
+.cover-pv{width:120px;aspect-ratio:707/1000;object-fit:cover;background:var(--moss);display:block;margin:.6rem 0;border:1px solid rgba(207,174,110,.4)}
+.bar-prog{height:3px;background:var(--moss);margin:.4rem 0}.bar-prog i{display:block;height:100%;width:0;background:var(--candle);transition:width .2s}
+/* プレビュー（小説ページと同じ組版） */
+.pv{position:fixed;inset:0;z-index:20;background:var(--night);display:none;padding:calc(.8rem + env(safe-area-inset-top,0px)) .6rem calc(4rem + env(safe-area-inset-bottom,0px))}
+.pv.on{display:block}
+.pv .paper{height:100%;background:var(--linen);color:var(--ink)}
+.pv .sheet{height:100%;writing-mode:vertical-rl;overflow-x:auto;padding:2rem 1.4rem;font-size:18px;line-height:1.95;letter-spacing:.04em}
+.sheet h1{font-size:1.25em;color:var(--ink);letter-spacing:.2em;margin:0 0 0 2.5em}
+.sheet p{margin:0;text-indent:1em}
+.sheet p.blank{width:1em}
+.sheet p.break{text-indent:0;text-align:center;color:var(--rose);letter-spacing:.6em}
+.sheet p.talk{text-indent:0}
+.bt{font-style:normal;-webkit-text-emphasis:filled sesame;text-emphasis:filled sesame}
+.tcy{-webkit-text-combine:horizontal;text-combine-upright:all}
+rt{font-size:.5em}
+.pv .close{position:fixed;bottom:calc(.8rem + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 初回設定 -->
+  <section class="view" id="vSetup">
+    <h1>書斎の鍵</h1>
+    <p class="note">この端末のブラウザにだけ保存されます。サイトやGitHub上には載りません。</p>
+    <label for="owner">GitHubのユーザー名</label>
+    <input type="text" id="owner" autocapitalize="off" autocomplete="off" spellcheck="false">
+    <label for="repo">リポジトリ名</label>
+    <input type="text" id="repo" autocapitalize="off" autocomplete="off" spellcheck="false">
+    <label for="token">アクセストークン</label>
+    <input type="password" id="token" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+    <div class="status" id="setupStatus"></div>
+    <button class="btn fill" id="setupSave">鍵を登録する</button>
+  </section>
+
+  <!-- 一覧 -->
+  <section class="view" id="vList">
+    <div class="top"><h1>書斎</h1><button class="link" id="toSetup">鍵の設定</button></div>
+    <nav class="tabs"><button aria-current="true">小説</button><button data-tab="manga">漫画</button></nav>
+    <button class="btn fill" id="newBtn">新しい話を書く</button>
+    <div class="status" id="listStatus"></div>
+    <ul class="list" id="epList"></ul>
+    <a class="link" href="novel.html">小説ページを見る</a>
+  </section>
+
+  <!-- 編集 -->
+  <section class="view" id="vEdit">
+    <div class="top"><h1 id="editHead">新しい話</h1><button class="link" id="backBtn">一覧へ</button></div>
+    <label for="title">話のタイトル</label>
+    <input type="text" id="title" placeholder="例：包帯の少女">
+    <label for="body">本文（ここに貼り付け）</label>
+    <div class="tools">
+      <button id="rubyBtn">ルビ</button>
+      <button id="btBtn">傍点</button>
+      <button id="pvBtn">縦書きで確認</button>
+    </div>
+    <textarea id="body" placeholder="本文を貼り付けてください。&#10;ルビ：|漢字《かんじ》　傍点：《《ここ》》"></textarea>
+    <div class="status" id="editStatus"></div>
+    <button class="btn danger" id="delBtn" hidden>この話を削除する</button>
+  </section>
+
+  <!-- 漫画：一覧 -->
+  <section class="view" id="vMList">
+    <div class="top"><h1>書斎</h1><button class="link" id="toSetup2">鍵の設定</button></div>
+    <nav class="tabs"><button data-tab="novel">小説</button><button aria-current="true">漫画</button></nav>
+    <div class="row-btns">
+      <button class="btn fill" id="mNewBtn">新しい話を追加</button>
+      <button class="btn" id="coverBtn">表紙を設定</button>
+    </div>
+    <input type="file" id="coverFile" accept="image/*" hidden>
+    <div class="status" id="mListStatus"></div>
+    <div class="bar-prog" id="mListProg" hidden><i></i></div>
+    <ul class="list" id="mList"></ul>
+    <a class="link" href="reader.html">漫画ページを見る</a>
+  </section>
+
+  <!-- 漫画：編集 -->
+  <section class="view" id="vMEdit">
+    <div class="top"><h1 id="mEditHead">新しい話</h1><button class="link" id="mBackBtn">一覧へ</button></div>
+    <label for="mTitle">話のタイトル</label>
+    <input type="text" id="mTitle" placeholder="例：包帯の少女">
+    <label>ページ（1枚目は扉として単独で表示されます）</label>
+    <div class="row-btns">
+      <button class="btn" id="addPages">画像を追加</button>
+    </div>
+    <input type="file" id="pageFiles" accept="image/*" multiple hidden>
+    <input type="file" id="swapFile" accept="image/*" hidden>
+    <p class="note">画像をタップすると差し替えできます。保存時に自動で縮小し、001.jpgからの連番で保存します。</p>
+    <div class="grid" id="grid"></div>
+    <div class="status" id="mEditStatus"></div>
+    <div class="bar-prog" id="mProg" hidden><i></i></div>
+    <button class="btn danger" id="mDelBtn" hidden>この話を削除する</button>
+  </section>
+</div>
+
+<div class="dock" id="dock" hidden>
+  <span class="grow" id="dockInfo"></span>
+  <button class="btn fill" id="saveBtn">保存する</button>
+</div>
+
+<div class="pv" id="pv">
+  <div class="paper"><article class="sheet" id="pvSheet"></article></div>
+  <button class="btn fill close" id="pvClose">戻る</button>
+</div>
+
+<script>
+const CFG_KEY="garden-editor", DRAFT="garden-draft:";
+const $=id=>document.getElementById(id);
+let cfg=(()=>{try{return JSON.parse(localStorage.getItem(CFG_KEY))}catch(e){return null}})();
+let idx={episodes:[]}, idxSha=null, editing=null, fileSha=null, busy=false;
+
+function show(v){ document.querySelectorAll(".view").forEach(x=>x.classList.toggle("on",x.id===v)); $("dock").hidden=!(v==="vEdit"||v==="vMEdit"); if(v==="vMEdit") $("dockInfo").textContent=`${mItems.length}ページ`; window.scrollTo(0,0); }
+function stat(id,msg,err){ const s=$(id); s.textContent=msg||""; s.classList.toggle("err",!!err); }
+
+/* ===== GitHub API ===== */
+const enc=s=>{const b=new TextEncoder().encode(s);let x="";for(let i=0;i<b.length;i+=8192)x+=String.fromCharCode(...b.subarray(i,i+8192));return btoa(x)};
+const dec=c=>new TextDecoder().decode(Uint8Array.from(atob(c.replace(/\n/g,"")),ch=>ch.charCodeAt(0)));
+async function gh(path,method="GET",body){
+  const r=await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${path}`,{
+    method,cache:"no-store",
+    headers:{Authorization:`Bearer ${cfg.token}`,Accept:"application/vnd.github+json",...(body?{"Content-Type":"application/json"}:{})},
+    body:body?JSON.stringify(body):undefined});
+  if(method==="GET"&&r.status===404) return null;
+  if(!r.ok){
+    const m={401:"鍵が無効か、期限切れです。",403:"この鍵に書き込みの権限がありません。",404:"リポジトリが見つかりません。",409:"他の場所で更新されています。一覧に戻って開き直してください。",422:"保存できませんでした。開き直してから試してください。"}[r.status];
+    throw new Error(m||`エラーが発生しました（${r.status}）`);
+  }
+  return method==="DELETE"?true:r.json();
+}
+async function loadIdx(){
+  const f=await gh("novel/index.json");
+  if(f){ idx=JSON.parse(dec(f.content)); idxSha=f.sha; } else { idx={episodes:[]}; idxSha=null; }
+  idx.episodes=idx.episodes||[];
+}
+async function saveIdx(msg){
+  const r=await gh("novel/index.json","PUT",{message:msg,content:enc(JSON.stringify(idx,null,2)+"\n"),...(idxSha?{sha:idxSha}:{})});
+  idxSha=r.content.sha;
+}
+
+/* ===== 初回設定 ===== */
+function openSetup(){
+  $("owner").value=cfg?.owner||"amechanwata";
+  $("repo").value=cfg?.repo||"amechanwata.github.io";
+  $("token").value=cfg?.token||"";
+  show("vSetup");
+}
+$("setupSave").onclick=async()=>{
+  const c={owner:$("owner").value.trim(),repo:$("repo").value.trim(),token:$("token").value.trim()};
+  if(!c.owner||!c.repo||!c.token) return stat("setupStatus","3つとも入力してください。",true);
+  stat("setupStatus","確認しています…");
+  const r=await fetch(`https://api.github.com/repos/${c.owner}/${c.repo}`,{headers:{Authorization:`Bearer ${c.token}`}});
+  if(!r.ok) return stat("setupStatus",r.status===401?"鍵が無効です。コピーし直してください。":"リポジトリにアクセスできません。名前と鍵の権限を確認してください。",true);
+  cfg=c; try{localStorage.setItem(CFG_KEY,JSON.stringify(cfg))}catch(e){}
+  stat("setupStatus",""); openHome();
+};
+$("toSetup").onclick=openSetup;
+document.addEventListener("click",e=>{ const t=e.target.closest("[data-tab]"); if(!t) return;
+  try{localStorage.setItem(CFG_KEY+":tab",t.dataset.tab)}catch(x){}
+  t.dataset.tab==="manga"?openMList():openList(); });
+
+/* ===== 一覧 ===== */
+async function openList(){
+  show("vList"); stat("listStatus","読み込んでいます…"); $("epList").innerHTML="";
+  try{ await loadIdx(); stat("listStatus",idx.episodes.length?"":"まだ話がありません。"); renderList(); }
+  catch(e){ stat("listStatus",e.message,true); }
+}
+function renderList(){
+  const n=idx.episodes.length;
+  $("epList").innerHTML=idx.episodes.map((e,i)=>`<li>
+    <button class="t" data-edit="${i}"><span class="no">第${i+1}話</span>${e.title.replace(/</g,"&lt;")}</button>
+    <button class="mv" data-up="${i}" ${i===0?"disabled":""} aria-label="上へ">↑</button>
+    <button class="mv" data-down="${i}" ${i===n-1?"disabled":""} aria-label="下へ">↓</button></li>`).join("");
+}
+$("epList").onclick=async e=>{
+  const b=e.target.closest("button"); if(!b||busy) return;
+  if(b.dataset.edit) return openEdit(+b.dataset.edit);
+  const i=+(b.dataset.up??b.dataset.down), j=b.dataset.up!==undefined?i-1:i+1;
+  [idx.episodes[i],idx.episodes[j]]=[idx.episodes[j],idx.episodes[i]]; renderList();
+  busy=true; stat("listStatus","並び順を保存しています…");
+  try{ await saveIdx("話の順番を変更"); stat("listStatus","並び順を保存しました。"); }
+  catch(err){ stat("listStatus",err.message,true); }
+  busy=false;
+};
+$("newBtn").onclick=()=>openEdit(null);
+
+/* ===== 編集 ===== */
+async function openEdit(i){
+  editing=i; fileSha=null; show("vEdit");
+  $("title").value=""; $("body").value=""; stat("editStatus","");
+  $("delBtn").hidden=i===null;
+  $("editHead").textContent=i===null?"新しい話":`第${i+1}話を編集`;
+  const key=DRAFT+(i===null?"new":idx.episodes[i].id);
+  let server="";
+  if(i!==null){
+    $("title").value=idx.episodes[i].title;
+    stat("editStatus","本文を読み込んでいます…");
+    try{ const f=await gh(`novel/${idx.episodes[i].id}.txt`); if(f){ server=dec(f.content); fileSha=f.sha; } stat("editStatus",""); }
+    catch(e){ return stat("editStatus",e.message,true); }
+  }
+  $("body").value=server;
+  try{ const d=JSON.parse(localStorage.getItem(key)); if(d&&(d.body!==server||(i!==null&&d.title!==idx.episodes[i].title))){ $("body").value=d.body; $("title").value=d.title; stat("editStatus","保存していない書きかけを復元しました。"); } }catch(e){}
+  updateInfo();
+}
+function draftKey(){ return DRAFT+(editing===null?"new":idx.episodes[editing].id); }
+function updateInfo(){ $("dockInfo").textContent=`${$("body").value.replace(/\s/g,"").length.toLocaleString()}文字`; }
+let dT; ["title","body"].forEach(id=>$(id).addEventListener("input",()=>{ updateInfo(); clearTimeout(dT);
+  dT=setTimeout(()=>{try{localStorage.setItem(draftKey(),JSON.stringify({title:$("title").value,body:$("body").value}))}catch(e){}},500); }));
+
+function wrap(a,b){ const t=$("body"), s=t.selectionStart, e=t.selectionEnd, sel=t.value.slice(s,e);
+  t.setRangeText(a+sel+b,s,e,"end"); if(!sel){ t.selectionStart=t.selectionEnd=s+a.length; } t.focus(); t.dispatchEvent(new Event("input")); }
+$("rubyBtn").onclick=()=>{ const t=$("body"); const sel=t.value.slice(t.selectionStart,t.selectionEnd);
+  if(sel){ t.setRangeText(`|${sel}《》`,t.selectionStart,t.selectionEnd,"end"); t.selectionStart=t.selectionEnd=t.selectionEnd-1; t.focus(); t.dispatchEvent(new Event("input")); } else wrap("|","《》"); };
+$("btBtn").onclick=()=>wrap("《《","》》");
+
+$("saveBtn").onclick=()=>{ if($("vMEdit").classList.contains("on")) mSave(); else nSave(); };
+async function nSave(){
+  if(busy) return;
+  const title=$("title").value.trim(), body=$("body").value;
+  if(!title) return stat("editStatus","タイトルを入れてください。",true);
+  if(!body.trim()) return stat("editStatus","本文が空です。",true);
+  busy=true; $("saveBtn").disabled=true; stat("editStatus","保存しています…");
+  try{
+    await loadIdx();
+    let id;
+    if(editing===null){
+      const nums=idx.episodes.map(e=>+(e.id.match(/\d+/)||[0])[0]);
+      id="ep"+String((nums.length?Math.max(...nums):0)+1).padStart(2,"0");
+    } else id=idx.episodes[editing]?.id;
+    if(!id) throw new Error("一覧が変わっています。一覧へ戻って開き直してください。");
+    const r=await gh(`novel/${id}.txt`,"PUT",{message:`${title} を保存`,content:enc(body.replace(/\r\n?/g,"\n")),...(fileSha?{sha:fileSha}:{})});
+    fileSha=r.content.sha;
+    const oldKey=draftKey();
+    if(editing===null){ idx.episodes.push({id,title}); editing=idx.episodes.length-1; }
+    else idx.episodes[editing].title=title;
+    await saveIdx(`目次を更新：${title}`);
+    try{localStorage.removeItem(oldKey);localStorage.removeItem(draftKey())}catch(e){}
+    $("editHead").textContent=`第${editing+1}話を編集`; $("delBtn").hidden=false;
+    stat("editStatus","保存しました。サイトへの反映には1〜2分かかります。");
+  }catch(e){ stat("editStatus",e.message,true); }
+  busy=false; $("saveBtn").disabled=false;
+}
+
+$("delBtn").onclick=async()=>{
+  if(busy||editing===null) return;
+  const e=idx.episodes[editing];
+  if(!confirm(`「${e.title}」を削除します。元に戻せません。よろしいですか？`)) return;
+  busy=true; stat("editStatus","削除しています…");
+  try{
+    if(fileSha) await gh(`novel/${e.id}.txt`,"DELETE",{message:`${e.title} を削除`,sha:fileSha});
+    await loadIdx(); idx.episodes=idx.episodes.filter(x=>x.id!==e.id); await saveIdx(`目次から削除：${e.title}`);
+    try{localStorage.removeItem(DRAFT+e.id)}catch(x){}
+    busy=false; openList();
+  }catch(err){ busy=false; stat("editStatus",err.message,true); }
+};
+$("backBtn").onclick=openList;
+
+/* ===== 縦書きプレビュー（小説ページと同じ変換）===== */
+function parse(src){
+  const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  return src.replace(/\r\n?/g,"\n").split("\n").map(line=>{
+    if(!line.trim()) return '<p class="blank"></p>';
+    let t=esc(line);
+    if(/^\s*[◇◆＊*※†✿❀・－―\-\s]+\s*$/.test(line)&&line.trim().length<=12) return `<p class="break">${t.trim()}</p>`;
+    t=t.replace(/《《(.+?)》》/g,'<em class="bt">$1</em>');
+    t=t.replace(/[|｜]([^|｜《]+?)《(.+?)》/g,'<ruby>$1<rt>$2</rt></ruby>');
+    t=t.replace(/([々〆ヵヶ\u4E00-\u9FFF]+)《(.+?)》/g,'<ruby>$1<rt>$2</rt></ruby>');
+    t=t.replace(/(^|[^0-9A-Za-z])([0-9]{1,2}|!!|!\?|\?!)(?![0-9A-Za-z])/g,'$1<span class="tcy">$2</span>');
+    return `<p${/^[「『（(〈]/.test(line.trim())?' class="talk"':''}>${t}</p>`;
+  }).join("");
+}
+$("pvBtn").onclick=()=>{ const esc=s=>s.replace(/</g,"&lt;");
+  $("pvSheet").innerHTML=`<h1>${esc($("title").value||"（無題）")}</h1>`+parse($("body").value);
+  $("pv").classList.add("on"); $("pvSheet").scrollLeft=0; };
+$("pvClose").onclick=()=>$("pv").classList.remove("on");
+
+
+/* =========================================================
+   漫画
+   ========================================================= */
+let mIdx={cover:"",episodes:[]}, mEditing=null, mItems=[], swapAt=-1, branch=null;
+const api=(path,method="GET",body)=>fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}${path?'/'+path:''}`,{
+  method,cache:"no-store",headers:{Authorization:`Bearer ${cfg.token}`,Accept:"application/vnd.github+json",...(body?{"Content-Type":"application/json"}:{})},
+  body:body?JSON.stringify(body):undefined}).then(async r=>{
+    if(r.status===404&&method==="GET") return null;
+    if(!r.ok) throw new Error({401:"鍵が無効か、期限切れです。",403:"この鍵に書き込みの権限がありません。",409:"他の場所で更新されています。開き直してください。",422:"保存できませんでした。もう一度試してください。"}[r.status]||`エラーが発生しました（${r.status}）`);
+    return r.json(); });
+function b64(u8){let x="";for(let i=0;i<u8.length;i+=8192)x+=String.fromCharCode(...u8.subarray(i,i+8192));return btoa(x)}
+function prog(id,n,total){ const b=$(id); b.hidden=!total; if(total) b.firstElementChild.style.width=(n/total*100)+"%"; }
+
+async function loadMIdx(){
+  const f=await gh("manga/index.json");
+  mIdx = f ? JSON.parse(dec(f.content)) : {cover:"",episodes:[]};
+  mIdx.episodes=mIdx.episodes||[];
+}
+// 画像をスマホ側で縮小してJPEGに
+async function toJpeg(file){
+  const url=URL.createObjectURL(file);
+  try{
+    const img=await new Promise((ok,ng)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ng(new Error(`読み込めない画像があります：${file.name}`));i.src=url;});
+    const M=2000, sc=Math.min(1,M/Math.max(img.naturalWidth,img.naturalHeight));
+    const w=Math.round(img.naturalWidth*sc), h=Math.round(img.naturalHeight*sc);
+    const c=document.createElement("canvas"); c.width=w; c.height=h;
+    const x=c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,w,h); x.drawImage(img,0,0,w,h);
+    const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",.85));
+    return b64(new Uint8Array(await blob.arrayBuffer()));
+  } finally { URL.revokeObjectURL(url); }
+}
+// 変更をまとめて1回のコミットで保存
+async function commit(entries,message){
+  if(!branch) branch=(await api("")).default_branch;
+  const ref=await api(`git/ref/heads/${branch}`);
+  const head=await api(`git/commits/${ref.object.sha}`);
+  const tree=await api("git/trees","POST",{base_tree:head.tree.sha,tree:entries});
+  const c=await api("git/commits","POST",{message,tree:tree.sha,parents:[ref.object.sha]});
+  await api(`git/refs/heads/${branch}`,"PATCH",{sha:c.sha});
+}
+const idxEntry=()=>({path:"manga/index.json",mode:"100644",type:"blob",content:JSON.stringify(mIdx,null,2)+"\n"});
+const blobOf=async content=>(await api("git/blobs","POST",{content,encoding:"base64"})).sha;
+
+/* 一覧 */
+async function openMList(){
+  show("vMList"); stat("mListStatus","読み込んでいます…"); $("mList").innerHTML="";
+  try{ await loadMIdx(); stat("mListStatus",mIdx.episodes.length?"":"まだ話がありません。"); renderMList(); }
+  catch(e){ stat("mListStatus",e.message,true); }
+}
+function renderMList(){
+  const n=mIdx.episodes.length;
+  $("mList").innerHTML=(mIdx.cover?`<li><img class="cover-pv" src="${mIdx.cover}?v=${mIdx.coverV||""}" alt="現在の表紙"></li>`:"")+
+  mIdx.episodes.map((e,i)=>`<li>
+    <button class="t" data-medit="${i}"><span class="no">第${i+1}話</span>${e.title.replace(/</g,"&lt;")}<span class="note">　${e.pages.length}頁</span></button>
+    <button class="mv" data-mup="${i}" ${i===0?"disabled":""} aria-label="上へ">↑</button>
+    <button class="mv" data-mdown="${i}" ${i===n-1?"disabled":""} aria-label="下へ">↓</button></li>`).join("");
+}
+$("mList").onclick=async e=>{
+  const b=e.target.closest("button"); if(!b||busy) return;
+  if(b.dataset.medit) return openMEdit(+b.dataset.medit);
+  const i=+(b.dataset.mup??b.dataset.mdown), j=b.dataset.mup!==undefined?i-1:i+1;
+  busy=true; stat("mListStatus","並び順を保存しています…");
+  try{ await loadMIdx(); [mIdx.episodes[i],mIdx.episodes[j]]=[mIdx.episodes[j],mIdx.episodes[i]];
+    await commit([idxEntry()],"漫画の順番を変更"); renderMList(); stat("mListStatus","並び順を保存しました。"); }
+  catch(err){ stat("mListStatus",err.message,true); }
+  busy=false;
+};
+$("mNewBtn").onclick=()=>openMEdit(null);
+$("toSetup2").onclick=openSetup;
+$("coverBtn").onclick=()=>$("coverFile").click();
+$("coverFile").onchange=async e=>{
+  const f=e.target.files[0]; e.target.value=""; if(!f||busy) return;
+  busy=true; stat("mListStatus","表紙を保存しています…");
+  try{ const sha=await blobOf(await toJpeg(f)); await loadMIdx();
+    mIdx.cover="manga/cover.jpg"; mIdx.coverV=Date.now();
+    await commit([{path:"manga/cover.jpg",mode:"100644",type:"blob",sha},idxEntry()],"表紙を更新");
+    renderMList(); stat("mListStatus","表紙を保存しました。反映には1〜2分かかります。"); }
+  catch(err){ stat("mListStatus",err.message,true); }
+  busy=false;
+};
+
+/* 編集 */
+async function openMEdit(i){
+  mEditing=i; mItems=[]; show("vMEdit"); stat("mEditStatus",""); prog("mProg",0,0);
+  $("mDelBtn").hidden=i===null;
+  $("mEditHead").textContent=i===null?"新しい話":`第${i+1}話を編集`;
+  $("mTitle").value=i===null?"":mIdx.episodes[i].title;
+  if(i!==null){
+    const ep=mIdx.episodes[i];
+    stat("mEditStatus","ページを読み込んでいます…");
+    try{
+      const dir=await gh(`manga/${ep.id}`)||[];
+      const shaOf=Object.fromEntries(dir.map(f=>[f.path,f.sha]));
+      mItems=ep.pages.filter(p=>shaOf[p]).map(p=>({path:p,sha:shaOf[p],url:`${p}?v=${ep.v||""}`}));
+      stat("mEditStatus","");
+    }catch(e){ stat("mEditStatus",e.message,true); }
+  }
+  renderGrid();
+}
+function renderGrid(){
+  const n=mItems.length;
+  $("grid").innerHTML=mItems.map((it,i)=>`<div class="cell">
+    <img src="${it.url}" alt="${i+1}ページ" data-swap="${i}" loading="lazy">
+    <span class="num">${i+1}</span>${it.file?'<span class="new">新</span>':""}
+    <div class="ops">
+      <button data-mv="${i}" data-d="-1" ${i===0?"disabled":""} aria-label="前へ">◀</button>
+      <button class="x" data-rm="${i}" aria-label="削除">✕</button>
+      <button data-mv="${i}" data-d="1" ${i===n-1?"disabled":""} aria-label="後ろへ">▶</button>
+    </div></div>`).join("") || '<p class="note">まだページがありません。「画像を追加」から選んでください。</p>';
+  $("dockInfo").textContent=`${n}ページ`;
+}
+$("grid").onclick=e=>{
+  const t=e.target.closest("[data-swap],[data-mv],[data-rm]"); if(!t||busy) return;
+  if(t.dataset.swap!==undefined){ swapAt=+t.dataset.swap; return $("swapFile").click(); }
+  if(t.dataset.rm!==undefined){ mItems.splice(+t.dataset.rm,1); return renderGrid(); }
+  const i=+t.dataset.mv, j=i+(+t.dataset.d); [mItems[i],mItems[j]]=[mItems[j],mItems[i]]; renderGrid();
+};
+$("addPages").onclick=()=>$("pageFiles").click();
+$("pageFiles").onchange=e=>{
+  const fs=[...e.target.files].sort((a,b)=>a.name.localeCompare(b.name,"ja",{numeric:true}));
+  fs.forEach(f=>mItems.push({file:f,url:URL.createObjectURL(f)})); e.target.value=""; renderGrid();
+};
+$("swapFile").onchange=e=>{
+  const f=e.target.files[0]; e.target.value=""; if(!f||swapAt<0) return;
+  mItems[swapAt]={file:f,url:URL.createObjectURL(f)}; swapAt=-1; renderGrid();
+};
+
+async function mSave(){
+  if(busy) return;
+  const title=$("mTitle").value.trim();
+  if(!title) return stat("mEditStatus","タイトルを入れてください。",true);
+  if(!mItems.length) return stat("mEditStatus","ページがありません。",true);
+  busy=true; $("saveBtn").disabled=true;
+  try{
+    await loadMIdx();
+    let id;
+    if(mEditing===null){
+      const nums=mIdx.episodes.map(e=>+(e.id.match(/\d+/)||[0])[0]);
+      id="ep"+String((nums.length?Math.max(...nums):0)+1).padStart(2,"0");
+    } else id=mIdx.episodes[mEditing]?.id;
+    if(!id) throw new Error("一覧が変わっています。開き直してください。");
+    const news=mItems.filter(x=>x.file).length; let done=0;
+    for(const it of mItems){
+      if(it.file){ stat("mEditStatus",`画像を送っています… ${done+1}／${news}枚`); it.sha=await blobOf(await toJpeg(it.file)); done++; prog("mProg",done,news+1); }
+    }
+    stat("mEditStatus","保存しています…");
+    const pages=mItems.map((_,i)=>`manga/${id}/${String(i+1).padStart(3,"0")}.jpg`);
+    const entries=mItems.map((it,i)=>({path:pages[i],mode:"100644",type:"blob",sha:it.sha}));
+    const old=(await gh(`manga/${id}`)||[]).map(f=>f.path).filter(p=>!pages.includes(p));
+    old.forEach(p=>entries.push({path:p,mode:"100644",type:"blob",sha:null}));
+    const ep={id,title,pages,v:Date.now()};
+    if(mEditing===null){ mIdx.episodes.push(ep); mEditing=mIdx.episodes.length-1; } else mIdx.episodes[mEditing]=ep;
+    entries.push(idxEntry());
+    await commit(entries,`漫画：${title} を保存`);
+    prog("mProg",1,1);
+    mItems=pages.map((p,i)=>({path:p,sha:entries[i].sha,url:mItems[i].url}));
+    $("mEditHead").textContent=`第${mEditing+1}話を編集`; $("mDelBtn").hidden=false; renderGrid();
+    stat("mEditStatus","保存しました。サイトへの反映には1〜2分かかります。");
+  }catch(e){ stat("mEditStatus",e.message,true); }
+  busy=false; $("saveBtn").disabled=false;
+}
+$("mDelBtn").onclick=async()=>{
+  if(busy||mEditing===null) return;
+  const ep=mIdx.episodes[mEditing];
+  if(!confirm(`「${ep.title}」の漫画を削除します。元に戻せません。よろしいですか？`)) return;
+  busy=true; stat("mEditStatus","削除しています…");
+  try{
+    const files=(await gh(`manga/${ep.id}`)||[]).map(f=>({path:f.path,mode:"100644",type:"blob",sha:null}));
+    await loadMIdx(); mIdx.episodes=mIdx.episodes.filter(x=>x.id!==ep.id);
+    await commit([...files,idxEntry()],`漫画：${ep.title} を削除`);
+    busy=false; openMList();
+  }catch(e){ busy=false; stat("mEditStatus",e.message,true); }
+};
+$("mBackBtn").onclick=openMList;
+
+function openHome(){ let t; try{t=localStorage.getItem(CFG_KEY+":tab")}catch(e){} t==="manga"?openMList():openList(); }
+cfg?.token ? openHome() : openSetup();
+</script>
+</body>
+</html>
