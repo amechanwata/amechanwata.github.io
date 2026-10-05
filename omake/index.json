@@ -13,6 +13,20 @@
       "memo": "",
       "thumb": "omake/k01_t.jpg",
       "v": 1791236809155
+    },
+    {
+      "id": "k02",
+      "title": "まねっこ",
+      "date": "2026.10.06",
+      "cast": [
+        "l",
+        "m"
+      ],
+      "img": "omake/k02.jpg",
+      "alt": "",
+      "memo": "",
+      "thumb": "omake/k02_t.jpg",
+      "v": 1791241295741
     }
   ]
 }
