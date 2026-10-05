@@ -11,7 +11,7 @@
 :root{
   --night:#1E1B24; --moss:#2A2630; --linen:#F6F2F7; --linen-dim:#B8B0C4;
   --rose:#8E80A8; --candle:#D6C8F0; --ink:#2E2538;
-  --serif:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","YuMincho",serif;
+  --serif:"Shippori Mincho","Hiragino Mincho ProN","Noto Serif JP","Yu Mincho","YuMincho",serif;
   --fs:18px;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
@@ -42,41 +42,49 @@ button{background:none;border:0;cursor:pointer}
 #reader{position:absolute;inset:0;display:none}
 #reader.on{display:block}
 .bar{position:fixed;left:0;right:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:0 1rem;transition:opacity .3s,transform .3s}
-.bar.top{top:0;padding-top:env(safe-area-inset-top,0px);height:calc(3rem + env(safe-area-inset-top,0px));background:linear-gradient(var(--night),rgba(30,27,36,.9))}
-.bar.bottom{bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);height:calc(3rem + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(30,27,36,.9),var(--night))}
+.bar.top{top:0;padding-top:env(safe-area-inset-top,0px);height:calc(3rem + env(safe-area-inset-top,0px));background:linear-gradient(var(--night),rgba(30,27,36,.92))}
+.bar.bottom{bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);height:calc(3.2rem + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(30,27,36,.92),var(--night))}
 .hide-ui .bar.top{opacity:0;transform:translateY(-100%);pointer-events:none}
 .hide-ui .bar.bottom{opacity:0;transform:translateY(100%);pointer-events:none}
 .bar button{font-size:.85rem;letter-spacing:.1em;color:var(--linen-dim);padding:.5rem .2rem;white-space:nowrap}
 .bar button:hover,.bar button[aria-pressed="true"]{color:var(--candle)}
 .ep-name{font-size:.88rem;letter-spacing:.12em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prog{font-size:.78rem;color:var(--linen-dim);font-variant-numeric:tabular-nums}
+.prog{font-size:.78rem;color:var(--linen-dim);font-variant-numeric:tabular-nums;min-width:5.5em;text-align:right}
+input[type=range]{flex:1;accent-color:var(--candle)}
+.v input[type=range]{direction:rtl}
 
-.paper{position:absolute;top:calc(3rem + env(safe-area-inset-top,0px));bottom:calc(3rem + env(safe-area-inset-bottom,0px));left:max(.6rem,3vw);right:max(.6rem,3vw);
-  background:var(--linen);color:var(--ink);box-shadow:0 30px 60px -20px rgba(0,0,0,.8),0 0 90px -20px rgba(214,200,240,.2)}
-.sheet{position:absolute;inset:0;padding:2.2rem 1.6rem;font-size:var(--fs);line-height:1.95;letter-spacing:.04em;
-  font-feature-settings:"palt" 0;-webkit-overflow-scrolling:touch}
-.v .sheet{writing-mode:vertical-rl;overflow-x:auto;overflow-y:hidden}
-.h .sheet{writing-mode:horizontal-tb;overflow-y:auto;overflow-x:hidden;padding:2rem max(1.4rem,calc((100% - 34em)/2));line-height:2}
-.sheet h1{font-size:1.25em;font-weight:600;letter-spacing:.2em;margin:0 0 0 2.5em}
-.h .sheet h1{margin:0 0 2.5em}
-.sheet p{margin:0;text-indent:1em}
-.sheet p.blank{height:1em;width:1em}
-.v .sheet p.blank{height:auto}
-.sheet p.break{text-indent:0;text-align:center;color:var(--rose);letter-spacing:.6em}
-.sheet p.talk{text-indent:0}
+/* 紙面：1ページずつめくる */
+.paper{position:absolute;top:calc(env(safe-area-inset-top,0px) + .5rem);bottom:calc(env(safe-area-inset-bottom,0px) + .5rem);left:.5rem;right:.5rem;
+  background:var(--linen);color:var(--ink);overflow:hidden;box-shadow:0 30px 60px -20px rgba(0,0,0,.8),0 0 90px -20px rgba(214,200,240,.2)}
+.vp{position:absolute;overflow:hidden}
+.flow{position:absolute;top:0;font-size:var(--fs);letter-spacing:.04em;line-height:var(--lh);}
+/* ページをめくる演出 */
+.v .vp.turn-next,.h .vp.turn-prev{animation:inL .3s ease}
+.v .vp.turn-prev,.h .vp.turn-next{animation:inR .3s ease}
+@keyframes inL{from{opacity:.15;transform:translateX(-18px)}to{opacity:1;transform:none}}
+@keyframes inR{from{opacity:.15;transform:translateX(18px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.vp.turn-next,.vp.turn-prev{animation:none}}
+.v .flow{writing-mode:vertical-rl;right:0;column-fill:auto}
+.h .flow{writing-mode:horizontal-tb;left:0;column-fill:auto}
+.flow h1{font-size:1.15em;font-weight:600;letter-spacing:.2em;margin:0;line-height:calc(var(--lh) * 2)}
+.flow p{margin:0;text-indent:1em}
+.flow p.blank::before{content:"\3000"}
+.flow p.break{text-indent:0;text-align:center;color:var(--rose);letter-spacing:.6em}
+.flow p.talk{text-indent:0}
 .bt{font-style:normal;-webkit-text-emphasis:filled sesame;text-emphasis:filled sesame}
 .h .bt{-webkit-text-emphasis-position:over right;text-emphasis-position:over right}
 .tcy{-webkit-text-combine:horizontal;text-combine-upright:all}
 rt{font-size:.5em;letter-spacing:0}
-.end{text-indent:0;margin:0 3em 0 0;display:flex;gap:1.5em;align-items:flex-start}
-.h .end{margin:3em 0 0}
-.end button{border:1px solid var(--ink);color:var(--ink);padding:.6em .9em;font-size:.85em;letter-spacing:.2em}
+.end{text-indent:0;display:flex;gap:1.2em;align-items:flex-start}
+.end button{border:1px solid var(--ink);color:var(--ink);padding:.5em .8em;font-size:.85em;letter-spacing:.2em;position:relative;z-index:4}
 .end button:hover{background:var(--ink);color:var(--linen)}
 .end .fin{color:var(--rose);letter-spacing:.4em;font-size:.9em}
+.folio{position:absolute;left:0;right:0;bottom:.7rem;text-align:center;font-size:.72rem;color:var(--rose);letter-spacing:.1em;font-variant-numeric:tabular-nums;pointer-events:none}
+.msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--rose);font-size:.9rem;line-height:2;padding:2rem}
 
-.tap{position:absolute;top:0;bottom:0;z-index:2;background:none;border:0}
-.tap.next{left:0;width:22%} .tap.prev{right:0;width:22%}
-.h .tap{display:none}
+/* タップ領域（縦書き：左で次へ／横書き：右で次へ） */
+.tap{position:absolute;top:0;bottom:0;z-index:3;background:none;border:0;-webkit-tap-highlight-color:transparent}
+.tap.left{left:0;width:30%} .tap.mid{left:30%;width:40%} .tap.right{right:0;width:30%}
 
 /* 設定 */
 .panel{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--moss);padding:1.2rem 1.4rem calc(1.4rem + env(safe-area-inset-bottom,0px));display:none;flex-direction:column;gap:1rem;box-shadow:0 -20px 40px rgba(0,0,0,.5)}
@@ -98,18 +106,21 @@ rt{font-size:.5em;letter-spacing:0}
 </section>
 
 <section id="reader" class="v" aria-label="本文">
+  <div class="paper" id="paper">
+    <div class="vp" id="vp"><article class="flow" id="flow"></article></div>
+    <div class="folio" id="folio"></div>
+    <div class="msg" id="msg" hidden></div>
+  </div>
+  <button class="tap left" id="tapL" aria-label="左のページ"></button>
+  <button class="tap mid" id="tapM" aria-label="メニューの表示切替"></button>
+  <button class="tap right" id="tapR" aria-label="右のページ"></button>
   <header class="bar top">
     <button id="closeBtn">目次</button>
     <span class="ep-name" id="epName"></span>
     <button id="setBtn">文字</button>
   </header>
-  <div class="paper">
-    <article class="sheet" id="sheet" tabindex="0"></article>
-    <button class="tap next" id="tapNext" aria-label="次へ"></button>
-    <button class="tap prev" id="tapPrev" aria-label="前へ"></button>
-  </div>
   <footer class="bar bottom">
-    <button id="uiBtn">没入</button>
+    <input type="range" id="slider" min="0" value="0" aria-label="ページ位置">
     <span class="prog" id="prog"></span>
   </footer>
 </section>
@@ -123,14 +134,14 @@ rt{font-size:.5em;letter-spacing:0}
 <script>
 const KEY="hikari-garden-novel";
 const $=id=>document.getElementById(id);
-let index=[], cur=-1, saveT;
+let index=[], cur=-1, page=0, total=1, step=0, swiped=false;
 const pref=(()=>{try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}})();
 pref.dir=pref.dir||"v"; pref.fs=pref.fs||18;
 function savePref(){try{localStorage.setItem(KEY,JSON.stringify(pref))}catch(e){}}
+const esc=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
 /* ===== カクヨム・なろう記法 → HTML ===== */
 function parse(src){
-  const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   return src.replace(/\r\n?/g,"\n").split("\n").map(line=>{
     if(!line.trim()) return '<p class="blank"></p>';
     let t=esc(line);
@@ -139,87 +150,126 @@ function parse(src){
     t=t.replace(/[|｜]([^|｜《]+?)《(.+?)》/g,'<ruby>$1<rt>$2</rt></ruby>');
     t=t.replace(/([々〆ヵヶ\u4E00-\u9FFF]+)《(.+?)》/g,'<ruby>$1<rt>$2</rt></ruby>');
     t=t.replace(/(^|[^0-9A-Za-z])([0-9]{1,2}|!!|!\?|\?!)(?![0-9A-Za-z])/g,'$1<span class="tcy">$2</span>');
-    const talk=/^[「『（(〈]/.test(line.trim());
-    return `<p${talk?' class="talk"':''}>${t}</p>`;
+    return `<p${/^[「『（(〈]/.test(line.trim())?' class="talk"':''}>${t}</p>`;
   }).join("");
 }
 
-/* ===== 読み込み ===== */
+/* ===== 目次 ===== */
 async function loadIndex(){
-  try{
-    const r=await fetch(`novel/index.json?t=${Date.now()}`);
-    if(!r.ok) throw 0;
-    index=(await r.json()).episodes||[];
-  }catch(e){ index=[]; }
+  try{ const r=await fetch(`novel/index.json?t=${Date.now()}`); if(!r.ok) throw 0; index=(await r.json()).episodes||[]; }
+  catch(e){ index=[]; }
   $("list").innerHTML = index.length
-    ? index.map((e,i)=>`<li><button data-i="${i}"><span class="no">第${i+1}話</span><span>${e.title}</span></button></li>`).join("")
+    ? index.map((e,i)=>`<li><button data-i="${i}"><span class="no">第${i+1}話</span><span>${esc(e.title)}</span></button></li>`).join("")
     : '<li class="empty">まだ話がありません。<br>投稿画面から最初の話を追加してください。</li>';
-  const b=pref.mark;
-  if(b && index.findIndex(e=>e.id===b.id)>=0){
-    const i=index.findIndex(e=>e.id===b.id);
-    $("resumeBtn").hidden=false; $("resumeBtn").textContent=`続きから（第${i+1}話）`;
-    $("resumeBtn").onclick=()=>open(i,b.pos);
-  }
+  const b=pref.mark, i=b?index.findIndex(e=>e.id===b.id):-1;
+  if(i>=0){ $("resumeBtn").hidden=false; $("resumeBtn").textContent=`続きから（第${i+1}話）`; $("resumeBtn").onclick=()=>open(i,b.pos); }
 }
+
+/* ===== 本文を開く ===== */
 async function open(i,pos=0){
   cur=i; const e=index[i];
   $("epName").textContent=`第${i+1}話　${e.title}`;
-  $("sheet").innerHTML='<p class="empty">ひらいています…</p>';
-  $("shelf").style.display="none"; $("reader").classList.add("on");
+  $("shelf").style.display="none"; $("reader").classList.add("on"); $("reader").classList.remove("hide-ui");
+  $("flow").innerHTML=""; showMsg("ひらいています…");
   try{
     const r=await fetch(`novel/${e.id}.txt?t=${Date.now()}`); if(!r.ok) throw 0;
     const txt=await r.text();
     const next = i<index.length-1 ? `<button id="nextEp">次の話へ</button>` : `<span class="fin">了</span>`;
-    $("sheet").innerHTML=`<h1>${e.title}</h1>${parse(txt)}<div class="end">${next}<button id="toList">目次へ</button></div>`;
+    $("flow").innerHTML=`<h1>${esc(e.title)}</h1><p class="blank"></p>${parse(txt)}<p class="blank"></p><div class="end">${next}<button id="toList">目次へ</button></div>`;
     $("toList").onclick=close;
     if($("nextEp")) $("nextEp").onclick=()=>open(i+1);
-  }catch(err){ $("sheet").innerHTML='<p class="err">本文を読み込めませんでした。<br>ファイルがあるか確認してください。</p>'; }
-  requestAnimationFrame(()=>{ setPos(pos); $("sheet").focus({preventScroll:true}); });
+    showMsg("");
+  }catch(err){ showMsg("本文を読み込めませんでした。<br>ファイルがあるか確認してください。"); }
+  paginate(pos);
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>paginate(ratio()));
 }
-function close(){ $("reader").classList.remove("on"); $("shelf").style.display=""; loadIndex(); }
+function showMsg(h){ $("msg").hidden=!h; $("msg").innerHTML=h; }
+function close(){ $("reader").classList.remove("on"); $("panel").classList.remove("on"); $("shelf").style.display=""; loadIndex(); }
 
-/* ===== 位置（0〜1）===== */
-function getPos(){ const s=$("sheet");
-  if(pref.dir==="v"){ const m=s.scrollWidth-s.clientWidth; return m>0?Math.abs(s.scrollLeft)/m:0; }
-  const m=s.scrollHeight-s.clientHeight; return m>0?s.scrollTop/m:0; }
-function setPos(p){ const s=$("sheet");
-  if(pref.dir==="v") s.scrollLeft=-(s.scrollWidth-s.clientWidth)*p;
-  else s.scrollTop=(s.scrollHeight-s.clientHeight)*p; showProg(); }
-function showProg(){ $("prog").textContent=Math.round(getPos()*100)+"%"; }
-$("sheet").addEventListener("scroll",()=>{ showProg(); clearTimeout(saveT);
-  saveT=setTimeout(()=>{ if(cur>=0){ pref.mark={id:index[cur].id,pos:getPos()}; savePref(); } },400); },{passive:true});
+/* ===== ページ割り ===== */
+function ratio(){ return total>1 ? page/(total-1) : 0; }
+function paginate(pos){
+  const paper=$("paper"), vp=$("vp"), flow=$("flow");
+  const pw=paper.clientWidth, ph=paper.clientHeight; if(!pw||!ph) return;
+  const fs=pref.fs, lh=Math.round(fs*2);
+  document.documentElement.style.setProperty("--fs",fs+"px");
+  document.documentElement.style.setProperty("--lh",lh+"px");
+  const padX=Math.max(18,Math.round(pw*.06)), padTop=Math.max(28,Math.round(ph*.05)), padBottom=padTop+16;
+  const availW=pw-padX*2, availH=ph-padTop-padBottom;
+  if(pref.dir==="v"){
+    // 縦書き：段組みで縦方向にページを並べ、上下に送る
+    const pageW=availW, pageH=availH, gap=padTop+padBottom;
+    Object.assign(vp.style,{width:pageW+"px",height:pageH+"px",left:padX+"px",top:padTop+"px"});
+    Object.assign(flow.style,{width:pageW+"px",height:pageH+"px",columnWidth:pageH+"px",columnGap:gap+"px"});
+    step=pageH+gap;
+    total=Math.max(1,Math.round((flow.scrollHeight+gap)/step));
+  }else{
+    const pageW=Math.min(availW,fs*34), pageH=Math.max(lh,Math.floor(availH/lh)*lh), gap=padX*2;
+    Object.assign(vp.style,{width:pageW+"px",height:pageH+"px",left:Math.round((pw-pageW)/2)+"px",top:padTop+"px"});
+    Object.assign(flow.style,{width:pageW+"px",height:pageH+"px",columnWidth:pageW+"px",columnGap:gap+"px"});
+    step=pageW+gap;
+    total=Math.max(1,Math.round((flow.scrollWidth+gap)/step));
+  }
+  page=Math.min(total-1,Math.max(0,Math.round((pos||0)*(total-1))));
+  show();
+}
+function show(dir){
+  if(dir){ const vp=$("vp"); vp.classList.remove("turn-next","turn-prev"); void vp.offsetWidth; vp.classList.add(dir>0?"turn-next":"turn-prev"); }
+  $("flow").style.transform = pref.dir==="v" ? `translateY(${-page*step}px)` : `translateX(${-page*step}px)`;
+  const label=`${page+1} / ${total}`;
+  $("prog").textContent=label; $("folio").textContent=label;
+  $("slider").max=total-1; $("slider").value=page;
+  if(cur>=0&&index[cur]){ pref.mark={id:index[cur].id,pos:ratio()}; savePref(); }
+}
+function go(d){
+  const n=page+d;
+  if(n>=0&&n<total){ page=n; show(d); $("reader").classList.add("hide-ui"); return; }
+  if(d>0&&cur<index.length-1) open(cur+1,0);
+  else if(d<0&&cur>0) open(cur-1,1);
+}
+// 縦書きは左が「次」、横書きは右が「次」
+// 最後のページの「次の話へ／目次へ」ボタンを押せるように
+function hitEnd(e){ const b=[...document.querySelectorAll(".end button")].find(el=>{const r=el.getBoundingClientRect();return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom;}); if(b){b.click();return true;} return false; }
+function side(s,e){ if(swiped){swiped=false;return;} if(hitEnd(e)) return; go((pref.dir==="v")===(s==="left")?1:-1); }
+$("tapL").onclick=e=>side("left",e);
+$("tapR").onclick=e=>side("right",e);
+$("tapM").onclick=e=>{ if(swiped){swiped=false;return;} if(hitEnd(e)) return; $("reader").classList.toggle("hide-ui"); $("panel").classList.remove("on"); };
+$("slider").oninput=e=>{ page=+e.target.value; show(); };
 
-/* ===== めくる（縦書き：左をタップで次へ）===== */
-function turn(d){ const s=$("sheet"), smooth=matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth";
-  if(pref.dir==="v") s.scrollBy({left:-d*s.clientWidth*.9,behavior:smooth});
-  else s.scrollBy({top:d*s.clientHeight*.9,behavior:smooth}); }
-$("tapNext").onclick=()=>turn(1);
-$("tapPrev").onclick=()=>turn(-1);
+// スワイプ
+let sx=null, sy=null;
+$("reader").addEventListener("touchstart",e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; },{passive:true});
+$("reader").addEventListener("touchend",e=>{
+  if(sx===null) return; const dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy; sx=null;
+  if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)&&!e.target.closest(".bar,.panel")){
+    swiped=true; setTimeout(()=>swiped=false,400);
+    go(pref.dir==="v" ? (dx>0?1:-1) : (dx<0?1:-1));
+  }
+});
 document.addEventListener("keydown",e=>{
   if(!$("reader").classList.contains("on")) return;
-  if(pref.dir==="v"){ if(e.key==="ArrowLeft"){e.preventDefault();turn(1)} if(e.key==="ArrowRight"){e.preventDefault();turn(-1)} }
-  if(e.key===" "){e.preventDefault();turn(e.shiftKey?-1:1)}
+  const v=pref.dir==="v";
+  if(e.key==="ArrowLeft"){e.preventDefault();go(v?1:-1)}
+  if(e.key==="ArrowRight"){e.preventDefault();go(v?-1:1)}
+  if(e.key===" "){e.preventDefault();go(e.shiftKey?-1:1)}
   if(e.key==="Escape") close();
 });
 
 /* ===== 設定 ===== */
 function applyPref(){
-  const p=getPos();
-  $("reader").className=($("reader").classList.contains("on")?"on ":"")+pref.dir+($("reader").classList.contains("hide-ui")?" hide-ui":"");
-  document.documentElement.style.setProperty("--fs",pref.fs+"px");
+  const r=ratio();
+  $("reader").classList.toggle("v",pref.dir==="v"); $("reader").classList.toggle("h",pref.dir==="h");
   document.querySelectorAll("#segDir button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===pref.dir));
   document.querySelectorAll("#segFs button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.v===+pref.fs));
-  requestAnimationFrame(()=>setPos(p));
+  if($("reader").classList.contains("on")) paginate(r);
 }
 $("segDir").onclick=e=>{const b=e.target.closest("button"); if(b){pref.dir=b.dataset.v; savePref(); applyPref();}};
 $("segFs").onclick=e=>{const b=e.target.closest("button"); if(b){pref.fs=+b.dataset.v; savePref(); applyPref();}};
 $("setBtn").onclick=()=>$("panel").classList.toggle("on");
 $("panelClose").onclick=()=>$("panel").classList.remove("on");
-$("uiBtn").onclick=()=>{ $("reader").classList.add("hide-ui"); };
-$("sheet").addEventListener("dblclick",()=>$("reader").classList.toggle("hide-ui"));
-$("reader").addEventListener("click",e=>{ if($("reader").classList.contains("hide-ui") && !e.target.closest(".tap")) $("reader").classList.remove("hide-ui"); });
 $("closeBtn").onclick=close;
 $("list").onclick=e=>{const b=e.target.closest("[data-i]"); if(b) open(+b.dataset.i);};
+let rT; window.addEventListener("resize",()=>{ clearTimeout(rT); rT=setTimeout(()=>{ if($("reader").classList.contains("on")) paginate(ratio()); },150); });
 
 applyPref(); loadIndex();
 </script>

@@ -63,16 +63,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 #reader{position:absolute;inset:0;display:none}
 #reader.on{display:block}
 .stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:3.2rem .5rem 3.6rem}
-.spread{display:flex;flex-direction:row-reverse;height:100%;max-width:100%;align-items:center;justify-content:center}
-.page{
-  position:relative;height:100%;max-height:100%;aspect-ratio:707/1000;max-width:100%;
-  background:var(--linen);overflow:hidden;
-}
-.page img{width:100%;height:100%;object-fit:contain;display:block;background:var(--linen)}
-/* 見開き：のど（綴じ目）の影 */
-.spread.two .page{max-width:50%}
-.spread.two .page:first-child{box-shadow:inset 22px 0 26px -18px rgba(0,0,0,.45)}   /* 右ページ */
-.spread.two .page:last-child{box-shadow:inset -22px 0 26px -18px rgba(0,0,0,.45)}   /* 左ページ */
+.spread{display:flex;flex-direction:row-reverse;align-items:center;justify-content:center}
+.page{position:relative;flex:none;background:var(--linen);overflow:hidden;width:70vw;height:99vw}
+.page img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
+/* 見開き：のど（綴じ目）の影（画像の上に重ねる） */
+.spread.two .page::after{content:"";position:absolute;top:0;bottom:0;width:28px;pointer-events:none}
+.spread.two .page:first-child::after{left:0;background:linear-gradient(to right,rgba(0,0,0,.28),transparent)}   /* 右ページ */
+.spread.two .page:last-child::after{right:0;background:linear-gradient(to left,rgba(0,0,0,.28),transparent)}    /* 左ページ */
 .spread{filter:drop-shadow(0 24px 40px rgba(0,0,0,.6))}
 .spread.turn-next{animation:turnNext .38s ease}
 .spread.turn-prev{animation:turnPrev .38s ease}
@@ -133,7 +130,7 @@ input[type=range]{flex:1;direction:rtl;accent-color:var(--candle)}
     <button id="tocBtn">目次</button>
   </header>
 
-  <div class="stage">
+  <div class="stage" id="stage">
     <div class="spread" id="spread"></div>
   </div>
   <button class="tap next" id="tapNext" aria-label="次のページ"></button>
@@ -191,10 +188,24 @@ function buildViews(){
 }
 function viewOfPage(p){ return Math.max(0, views.findIndex(v=>v.includes(p))); }
 
+// ページの大きさを画面に合わせて計算（スマホでも確実に表示されるように）
+const ratios={};
+function sizePages(){
+  const st=$("stage"), cs=getComputedStyle(st);
+  const W=st.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+  const H=st.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+  const ps=[...document.querySelectorAll("#spread .page")]; if(!ps.length||W<=0||H<=0) return;
+  const rs=ps.map(p=>ratios[p.dataset.src]||0.707), sum=rs.reduce((a,b)=>a+b,0);
+  const h=Math.floor(Math.min(H, W/sum));
+  ps.forEach((p,i)=>{ p.style.height=h+"px"; p.style.width=Math.floor(h*rs[i])+"px"; });
+}
 function render(dir){
   const pages = pagesOf(ep), v = views[view], s = $("spread");
   s.className = "spread" + (v.length===2?" two":"");
-  s.innerHTML = v.map(i=>`<div class="page"><img src="${pages[i]}" alt="第${ep+1}話 ${i+1}ページ" decoding="async"></div>`).join("");
+  s.innerHTML = v.map(i=>`<div class="page" data-src="${pages[i]}"><img src="${pages[i]}" alt="第${ep+1}話 ${i+1}ページ"></div>`).join("");
+  s.querySelectorAll("img").forEach(im=>{ const done=()=>{ if(im.naturalWidth){ ratios[im.parentNode.dataset.src]=im.naturalWidth/im.naturalHeight; sizePages(); } };
+    if(im.complete) done(); else im.addEventListener("load",done); });
+  sizePages();
   if(dir){ void s.offsetWidth; s.classList.add(dir>0?"turn-next":"turn-prev"); }
   $("epName").textContent = BOOK.episodes[ep].title;
   const last = v[v.length-1]+1;
@@ -270,7 +281,8 @@ $("reader").addEventListener("touchend",e=>{
   if(sx===null) return; const dx=e.changedTouches[0].clientX-sx; sx=null;
   if(Math.abs(dx)>50) go(dx>0?1:-1);
 });
-window.addEventListener("resize", checkLayout);
+window.addEventListener("resize", ()=>{ checkLayout(); sizePages(); });
+window.addEventListener("orientationchange", ()=>setTimeout(()=>{ checkLayout(); sizePages(); },300));
 
 // 初期化
 (async()=>{
