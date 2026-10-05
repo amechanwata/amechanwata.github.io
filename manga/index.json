@@ -70,6 +70,21 @@
         "manga/ep03/016.jpg"
       ],
       "v": 1791198787617
+    },
+    {
+      "id": "ep04",
+      "title": "4話",
+      "pages": [
+        "manga/ep04/001.jpg",
+        "manga/ep04/002.jpg",
+        "manga/ep04/003.jpg",
+        "manga/ep04/004.jpg",
+        "manga/ep04/005.jpg",
+        "manga/ep04/006.jpg",
+        "manga/ep04/007.jpg",
+        "manga/ep04/008.jpg"
+      ],
+      "v": 1791198843899
     }
   ],
   "coverV": 1791174323760
