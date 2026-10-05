@@ -79,6 +79,10 @@ rt{font-size:.5em;letter-spacing:0}
 .end button{border:1px solid var(--ink);color:var(--ink);padding:.5em .8em;font-size:.85em;letter-spacing:.2em;position:relative;z-index:4}
 .end button:hover{background:var(--ink);color:var(--linen)}
 .end .fin{color:var(--rose);letter-spacing:.4em;font-size:.9em}
+/* 挿絵：1ページまるごと使って表示 */
+.flow figure.illust{margin:0;width:var(--pw);height:var(--ph);display:flex;align-items:center;justify-content:center;text-indent:0;
+  break-before:column;break-after:column;-webkit-column-break-before:always;-webkit-column-break-after:always;break-inside:avoid}
+.flow figure.illust img{max-width:100%;max-height:100%;width:auto;height:auto;display:block;box-shadow:0 6px 18px rgba(46,37,56,.18)}
 .folio{position:absolute;left:0;right:0;bottom:.7rem;text-align:center;font-size:.72rem;color:var(--rose);letter-spacing:.1em;font-variant-numeric:tabular-nums;pointer-events:none}
 .msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--rose);font-size:.9rem;line-height:2;padding:2rem}
 
@@ -144,6 +148,8 @@ const esc=t=>String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"
 function parse(src){
   return src.replace(/\r\n?/g,"\n").split("\n").map(line=>{
     if(!line.trim()) return '<p class="blank"></p>';
+    const ill=line.trim().match(/^［挿絵[:：]([\w\-./]+)］$/);
+    if(ill) return `<figure class="illust"><img src="${ill[1]}" alt="挿絵" loading="lazy"></figure>`;
     let t=esc(line);
     if(/^\s*[◇◆＊*※†✿❀・－―\-\s]+\s*$/.test(line)&&line.trim().length<=12) return `<p class="break">${t.trim()}</p>`;
     t=t.replace(/《《(.+?)》》/g,'<em class="bt">$1</em>');
@@ -178,6 +184,7 @@ async function open(i,pos=0){
     $("flow").innerHTML=`<h1>${esc(e.title)}</h1><p class="blank"></p>${parse(txt)}<p class="blank"></p><div class="end">${next}<button id="toList">目次へ</button></div>`;
     $("toList").onclick=close;
     if($("nextEp")) $("nextEp").onclick=()=>open(i+1);
+    $("flow").querySelectorAll("img").forEach(im=>im.addEventListener("load",()=>paginate(ratio())));
     showMsg("");
   }catch(err){ showMsg("本文を読み込めませんでした。<br>ファイルがあるか確認してください。"); }
   paginate(pos);
@@ -196,6 +203,9 @@ function paginate(pos){
   document.documentElement.style.setProperty("--lh",lh+"px");
   const padX=Math.max(18,Math.round(pw*.06)), padTop=Math.max(28,Math.round(ph*.05)), padBottom=padTop+16;
   const availW=pw-padX*2, availH=ph-padTop-padBottom;
+  const pwv=pref.dir==="v"?availW:Math.min(availW,fs*34), phv=pref.dir==="v"?availH:Math.max(lh,Math.floor(availH/lh)*lh);
+  document.documentElement.style.setProperty("--pw",pwv+"px");
+  document.documentElement.style.setProperty("--ph",phv+"px");
   if(pref.dir==="v"){
     // 縦書き：段組みで縦方向にページを並べ、上下に送る
     const pageW=availW, pageH=availH, gap=padTop+padBottom;

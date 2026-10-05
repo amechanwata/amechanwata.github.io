@@ -75,6 +75,8 @@ textarea{min-height:58vh;line-height:1.9;resize:vertical}
 .bt{font-style:normal;-webkit-text-emphasis:filled sesame;text-emphasis:filled sesame}
 .tcy{-webkit-text-combine:horizontal;text-combine-upright:all}
 rt{font-size:.5em}
+.sheet figure.illust{margin:0 1.5em;text-indent:0;display:flex;align-items:center;justify-content:center;height:100%}
+.sheet figure.illust img{max-height:100%;max-width:70vw}
 .pv .close{position:fixed;bottom:calc(.8rem + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%)}
 </style>
 </head>
@@ -114,9 +116,11 @@ rt{font-size:.5em}
     <div class="tools">
       <button id="rubyBtn">ルビ</button>
       <button id="btBtn">傍点</button>
+      <button id="illBtn">挿絵</button>
       <button id="pvBtn">縦書きで確認</button>
     </div>
-    <textarea id="body" placeholder="本文を貼り付けてください。&#10;ルビ：|漢字《かんじ》　傍点：《《ここ》》"></textarea>
+    <input type="file" id="illFile" accept="image/*" hidden>
+    <textarea id="body" placeholder="本文を貼り付けてください。&#10;ルビ：|漢字《かんじ》　傍点：《《ここ》》　挿絵：［挿絵：novel/img/〜.jpg］"></textarea>
     <div class="status" id="editStatus"></div>
     <button class="btn danger" id="delBtn" hidden>この話を削除する</button>
   </section>
@@ -274,6 +278,25 @@ $("rubyBtn").onclick=()=>{ const t=$("body"); const sel=t.value.slice(t.selectio
   if(sel){ t.setRangeText(`|${sel}《》`,t.selectionStart,t.selectionEnd,"end"); t.selectionStart=t.selectionEnd=t.selectionEnd-1; t.focus(); t.dispatchEvent(new Event("input")); } else wrap("|","《》"); };
 $("btBtn").onclick=()=>wrap("《《","》》");
 
+/* 挿絵：画像を選ぶと縮小してアップし、カーソル位置に印を入れる */
+const localIll={};
+$("illBtn").onclick=()=>{ if(!busy) $("illFile").click(); };
+$("illFile").onchange=async e=>{
+  const f=e.target.files[0]; e.target.value=""; if(!f) return;
+  const t=$("body"), at=t.selectionStart;
+  busy=true; stat("editStatus","挿絵をアップしています…");
+  try{
+    const key=(editing===null?"new":idx.episodes[editing].id)+"-"+Date.now().toString(36);
+    const path=`novel/img/${key}.jpg`;
+    await gh(path,"PUT",{message:"挿絵を追加",content:await toJpeg(f)});
+    localIll[path]=URL.createObjectURL(f);
+    const before=t.value.slice(0,at), pre=before&&!before.endsWith("\n")?"\n":"";
+    t.setRangeText(`${pre}［挿絵：${path}］\n`,at,at,"end"); t.focus(); t.dispatchEvent(new Event("input"));
+    stat("editStatus","挿絵を入れました。「保存する」で本文に反映されます。");
+  }catch(err){ stat("editStatus",err.message,true); }
+  busy=false;
+};
+
 $("saveBtn").onclick=()=>{ if($("vMEdit").classList.contains("on")) mSave(); else nSave(); };
 async function nSave(){
   if(busy) return;
@@ -321,6 +344,8 @@ function parse(src){
   const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   return src.replace(/\r\n?/g,"\n").split("\n").map(line=>{
     if(!line.trim()) return '<p class="blank"></p>';
+    const ill=line.trim().match(/^［挿絵[:：]([\w\-./]+)］$/);
+    if(ill) return `<figure class="illust"><img src="${localIll[ill[1]]||ill[1]}" alt="挿絵"></figure>`;
     let t=esc(line);
     if(/^\s*[◇◆＊*※†✿❀・－―\-\s]+\s*$/.test(line)&&line.trim().length<=12) return `<p class="break">${t.trim()}</p>`;
     t=t.replace(/《《(.+?)》》/g,'<em class="bt">$1</em>');
