@@ -188,6 +188,10 @@ h2{font-weight:600;font-size:24px;letter-spacing:.24em;text-align:center;margin:
 .sites a{display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0 16px;border:1px solid rgba(214,200,240,.35);border-radius:3px;text-decoration:none;font-size:15px;letter-spacing:.14em}
 .sites a::after{content:"";width:7px;height:7px;border-top:1px solid currentColor;border-right:1px solid currentColor;transform:rotate(45deg)}
 .sites a:hover,.sites a:focus-visible{background:rgba(40,34,52,.5);border-color:rgba(214,200,240,.8)}
+.elsewhere{margin-top:22px;text-align:left}
+.elsewhere summary{list-style:none;cursor:pointer;display:inline-block;font-size:13px;letter-spacing:.14em;color:var(--deep-soft);padding:8px 0;border-bottom:1px solid rgba(214,200,240,.3)}
+.elsewhere summary::-webkit-details-marker{display:none}
+.elsewhere[open] summary{color:var(--deep-ink)}
 .map{margin-top:48px}
 .map h3{font-size:16px;font-weight:600;letter-spacing:.2em;text-align:center;margin:0 0 6px}
 .map .note{font-size:13px;color:var(--deep-soft);text-align:center;margin:0 0 18px}
@@ -307,25 +311,25 @@ a:focus-visible,summary:focus-visible{outline:2px solid #B9A6DE;outline-offset:3
       <h2>物語を読む</h2>
       <p class="lead">漫画と小説は同じ物語です。どちらから読んでも大丈夫。</p>
       <div class="choices">
-        <a class="choice" href="https://a-i-manga.com/series/dqGxBvn6" target="_blank" rel="noopener">
+        <a class="choice" href="reader.html">
           <span class="k">漫画で読む</span>
           <span class="d">表情と情景で、二人の時間を目で追う</span>
-          <span class="d site">AIMANGAで読めます</span>
         </a>
-        <details class="choice novel">
-          <summary>
-            <span class="k">小説で読む</span>
-            <span class="d">言葉にならない想いまで、深く辿る</span>
-          </summary>
-          <div class="sites">
-            <p class="pick">読みやすいサイトを選んでください</p>
-            <a href="https://caita.ai/series/01M35S35XCQ8CP8TCYG578FXFD" target="_blank" rel="noopener">Caita</a>
-            <a href="https://ncode.syosetu.com/n9361mt/" target="_blank" rel="noopener">小説家になろう</a>
-            <a href="https://tales.note.com/amechanwata/wourjzeyee9uc?ss=wslndo2zm5wjo8g" target="_blank" rel="noopener">TALES</a>
-            <a href="https://story.nola-novel.com/novel/N-c4938dd4-27e8-4370-9f5f-8b68a540ad99" target="_blank" rel="noopener">Nola</a>
-          </div>
-        </details>
+        <a class="choice" href="novel.html">
+          <span class="k">小説で読む</span>
+          <span class="d">言葉にならない想いまで、深く辿る</span>
+        </a>
       </div>
+      <details class="elsewhere">
+        <summary>ほかのサイトでも読めます</summary>
+        <div class="sites">
+          <a href="https://a-i-manga.com/series/dqGxBvn6" target="_blank" rel="noopener">AIMANGA（漫画）</a>
+          <a href="https://caita.ai/series/01M35S35XCQ8CP8TCYG578FXFD" target="_blank" rel="noopener">Caita</a>
+          <a href="https://ncode.syosetu.com/n9361mt/" target="_blank" rel="noopener">小説家になろう</a>
+          <a href="https://tales.note.com/amechanwata/wourjzeyee9uc?ss=wslndo2zm5wjo8g" target="_blank" rel="noopener">TALES</a>
+          <a href="https://story.nola-novel.com/novel/N-c4938dd4-27e8-4370-9f5f-8b68a540ad99" target="_blank" rel="noopener">Nola</a>
+        </div>
+      </details>
     </div>
   </section>
 
@@ -345,8 +349,8 @@ a:focus-visible,summary:focus-visible{outline:2px solid #B9A6DE;outline-offset:3
     <div class="wrap">
       <div class="sns">
         <a href="https://x.com/amechanwata" target="_blank" rel="noopener">X</a>
-        <a href="#read">小説を読む</a>
-        <a href="https://a-i-manga.com/series/dqGxBvn6" target="_blank" rel="noopener">漫画を読む</a>
+        <a href="novel.html">小説を読む</a>
+        <a href="reader.html">漫画を読む</a>
       </div>
       <p class="copy">© amechan</p>
     </div>
