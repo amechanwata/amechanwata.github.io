@@ -611,6 +611,18 @@ function openKEdit(i){
   if(i!==null&&k.img){ $("kPreview").src=`${k.img}?v=${k.v||""}`; $("kPreview").style.display="block"; }
   else { $("kPreview").removeAttribute("src"); $("kPreview").style.display="none"; }
 }
+// 一覧用の小さな画像：4コマの上の部分（タイトル＋1コマ目）を切り出す
+async function toThumb(file){
+  const url=URL.createObjectURL(file);
+  try{
+    const img=await new Promise((ok,ng)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ng(new Error("画像を読み込めませんでした"));i.src=url;});
+    const W=600, srcH=Math.round(img.naturalHeight*0.285), H=Math.round(W*srcH/img.naturalWidth);
+    const c=document.createElement("canvas"); c.width=W; c.height=H;
+    const x=c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,W,H); x.drawImage(img,0,0,img.naturalWidth,srcH,0,0,W,H);
+    const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",.8));
+    return b64(new Uint8Array(await blob.arrayBuffer()));
+  } finally { URL.revokeObjectURL(url); }
+}
 async function kSave(){
   if(busy) return;
   const title=$("kTitle").value.trim();
@@ -631,7 +643,11 @@ async function kSave(){
     if(kFileSel){
       stat("kEditStatus","画像を送っています…");
       const sha=await blobOf(await toJpeg(kFileSel));
-      entries.push({path:k.img,mode:"100644",type:"blob",sha}); k.v=Date.now();
+      entries.push({path:k.img,mode:"100644",type:"blob",sha});
+      k.thumb=k.img.replace(/\.jpg$/,"_t.jpg");
+      const tsha=await blobOf(await toThumb(kFileSel));
+      entries.push({path:k.thumb,mode:"100644",type:"blob",sha:tsha});
+      k.v=Date.now();
     }
     if(kEditing===null){ kIdx.strips.push(k); kEditing=kIdx.strips.length-1; }
     stat("kEditStatus","保存しています…");
@@ -649,6 +665,7 @@ $("kDelBtn").onclick=async()=>{
   busy=true; stat("kEditStatus","削除しています…");
   try{ await loadKIdx(); const cur=kIdx.strips.find(x=>x.id===k.id); kIdx.strips=kIdx.strips.filter(x=>x.id!==k.id);
     const entries=[kIdxEntry()]; if(cur&&cur.img) entries.unshift({path:cur.img,mode:"100644",type:"blob",sha:null});
+    if(cur&&cur.thumb) entries.unshift({path:cur.thumb,mode:"100644",type:"blob",sha:null});
     await commit(entries,`4コマ：${k.title} を削除`); busy=false; openKList(); }
   catch(e){ busy=false; stat("kEditStatus",e.message,true); }
 };
