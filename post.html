@@ -18,6 +18,7 @@
   padding-bottom:env(safe-area-inset-bottom,0px);
 }
 *,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
 html,body{margin:0;min-height:100%}
 body{background:var(--night);color:#E8E2EE;font-family:var(--serif)}
 button,input,textarea{font:inherit;color:inherit}
@@ -100,7 +101,7 @@ rt{font-size:.5em}
   <!-- 一覧 -->
   <section class="view" id="vList">
     <div class="top"><h1>書斎</h1><button class="link" id="toSetup">鍵の設定</button></div>
-    <nav class="tabs"><button aria-current="true">小説</button><button data-tab="manga">漫画</button></nav>
+    <nav class="tabs"><button aria-current="true">小説</button><button data-tab="manga">漫画</button><button data-tab="koma">4コマ</button></nav>
     <button class="btn fill" id="newBtn">新しい話を書く</button>
     <div class="status" id="listStatus"></div>
     <ul class="list" id="epList"></ul>
@@ -128,7 +129,7 @@ rt{font-size:.5em}
   <!-- 漫画：一覧 -->
   <section class="view" id="vMList">
     <div class="top"><h1>書斎</h1><button class="link" id="toSetup2">鍵の設定</button></div>
-    <nav class="tabs"><button data-tab="novel">小説</button><button aria-current="true">漫画</button></nav>
+    <nav class="tabs"><button data-tab="novel">小説</button><button aria-current="true">漫画</button><button data-tab="koma">4コマ</button></nav>
     <div class="row-btns">
       <button class="btn fill" id="mNewBtn">新しい話を追加</button>
       <button class="btn" id="coverBtn">表紙を設定</button>
@@ -157,6 +158,34 @@ rt{font-size:.5em}
     <div class="bar-prog" id="mProg" hidden><i></i></div>
     <button class="btn danger" id="mDelBtn" hidden>この話を削除する</button>
   </section>
+
+  <!-- 4コマ：一覧 -->
+  <section class="view" id="vKList">
+    <div class="top"><h1>書斎</h1><button class="link" id="toSetup3">鍵の設定</button></div>
+    <nav class="tabs"><button data-tab="novel">小説</button><button data-tab="manga">漫画</button><button aria-current="true">4コマ</button></nav>
+    <button class="btn fill" id="kNewBtn">新しい4コマを追加</button>
+    <div class="status" id="kListStatus"></div>
+    <p class="note">ここで追加した4コマは、おまけページの最初から入っている3本のあとに並びます。</p>
+    <ul class="list" id="kList"></ul>
+    <a class="link" href="omake.html">おまけページを見る</a>
+  </section>
+
+  <!-- 4コマ：編集 -->
+  <section class="view" id="vKEdit">
+    <div class="top"><h1 id="kEditHead">新しい4コマ</h1><button class="link" id="kBackBtn">一覧へ</button></div>
+    <label>4コマの画像</label>
+    <button class="btn" id="kPick">画像を選ぶ</button>
+    <input type="file" id="kFile" accept="image/*" hidden>
+    <img id="kPreview" alt="選んだ4コマのプレビュー" style="display:none;width:100%;max-width:360px;margin:12px 0;border:1px solid rgba(232,226,238,.25)">
+    <label for="kTitle">タイトル</label>
+    <input type="text" id="kTitle" placeholder="例：なでての合図">
+    <label for="kAlt">あらすじ（読み上げ用・なくてもOK）</label>
+    <textarea id="kAlt" style="min-height:5.5em" placeholder="例：リリアが猫をなでていると、ムゥが「……にゃ」と鳴く。"></textarea>
+    <label for="kMemo">ひとこと（ページに表示・なくてもOK）</label>
+    <textarea id="kMemo" style="min-height:4.5em" placeholder="例：猫の名前はまだ決まっていません。"></textarea>
+    <div class="status" id="kEditStatus"></div>
+    <button class="btn danger" id="kDelBtn" hidden>この4コマを削除する</button>
+  </section>
 </div>
 
 <div class="dock" id="dock" hidden>
@@ -175,7 +204,7 @@ const $=id=>document.getElementById(id);
 let cfg=(()=>{try{return JSON.parse(localStorage.getItem(CFG_KEY))}catch(e){return null}})();
 let idx={episodes:[]}, idxSha=null, editing=null, fileSha=null, busy=false;
 
-function show(v){ document.querySelectorAll(".view").forEach(x=>x.classList.toggle("on",x.id===v)); $("dock").hidden=!(v==="vEdit"||v==="vMEdit"); if(v==="vMEdit") $("dockInfo").textContent=`${mItems.length}ページ`; window.scrollTo(0,0); }
+function show(v){ document.querySelectorAll(".view").forEach(x=>x.classList.toggle("on",x.id===v)); $("dock").hidden=!(v==="vEdit"||v==="vMEdit"||v==="vKEdit"); if(v==="vKEdit") $("dockInfo").textContent="4コマ"; if(v==="vMEdit") $("dockInfo").textContent=`${mItems.length}ページ`; window.scrollTo(0,0); }
 function stat(id,msg,err){ const s=$(id); s.textContent=msg||""; s.classList.toggle("err",!!err); }
 
 /* ===== GitHub API ===== */
@@ -222,7 +251,7 @@ $("setupSave").onclick=async()=>{
 $("toSetup").onclick=openSetup;
 document.addEventListener("click",e=>{ const t=e.target.closest("[data-tab]"); if(!t) return;
   try{localStorage.setItem(CFG_KEY+":tab",t.dataset.tab)}catch(x){}
-  t.dataset.tab==="manga"?openMList():openList(); });
+  t.dataset.tab==="manga"?openMList():t.dataset.tab==="koma"?openKList():openList(); });
 
 /* ===== 一覧 ===== */
 async function openList(){
@@ -297,7 +326,7 @@ $("illFile").onchange=async e=>{
   busy=false;
 };
 
-$("saveBtn").onclick=()=>{ if($("vMEdit").classList.contains("on")) mSave(); else nSave(); };
+$("saveBtn").onclick=()=>{ if($("vMEdit").classList.contains("on")) mSave(); else if($("vKEdit").classList.contains("on")) kSave(); else nSave(); };
 async function nSave(){
   if(busy) return;
   const title=$("title").value.trim(), body=$("body").value;
@@ -536,7 +565,95 @@ $("mDelBtn").onclick=async()=>{
 };
 $("mBackBtn").onclick=openMList;
 
-function openHome(){ let t; try{t=localStorage.getItem(CFG_KEY+":tab")}catch(e){} t==="manga"?openMList():openList(); }
+/* =========================================================
+   4コマ（おまけページ）：画像1枚をポイっと追加
+   ========================================================= */
+let kIdx={strips:[]}, kEditing=null, kFileSel=null;
+async function loadKIdx(){ const f=await gh("omake/index.json"); kIdx=f?JSON.parse(dec(f.content)):{strips:[]}; kIdx.strips=kIdx.strips||[]; }
+const kIdxEntry=()=>({path:"omake/index.json",mode:"100644",type:"blob",content:JSON.stringify(kIdx,null,2)+"\n"});
+function today(){ const d=new Date(); return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,"0")}.${String(d.getDate()).padStart(2,"0")}`; }
+
+async function openKList(){
+  show("vKList"); stat("kListStatus","読み込んでいます…"); $("kList").innerHTML="";
+  try{ await loadKIdx(); stat("kListStatus",kIdx.strips.length?"":"まだ追加した4コマはありません。"); renderKList(); }
+  catch(e){ stat("kListStatus",e.message,true); }
+}
+function renderKList(){
+  const n=kIdx.strips.length;
+  $("kList").innerHTML=kIdx.strips.map((k,i)=>`<li>
+    <button class="t" data-kedit="${i}">${k.title.replace(/</g,"&lt;")}<span class="note">　${k.date||""}</span></button>
+    <button class="mv" data-kup="${i}" ${i===0?"disabled":""} aria-label="上へ">↑</button>
+    <button class="mv" data-kdown="${i}" ${i===n-1?"disabled":""} aria-label="下へ">↓</button></li>`).join("");
+}
+$("kList").onclick=async e=>{
+  const b=e.target.closest("button"); if(!b||busy) return;
+  if(b.dataset.kedit) return openKEdit(+b.dataset.kedit);
+  const i=+(b.dataset.kup??b.dataset.kdown), j=b.dataset.kup!==undefined?i-1:i+1;
+  busy=true; stat("kListStatus","並び順を保存しています…");
+  try{ await loadKIdx(); [kIdx.strips[i],kIdx.strips[j]]=[kIdx.strips[j],kIdx.strips[i]];
+    await commit([kIdxEntry()],"4コマの順番を変更"); renderKList(); stat("kListStatus","並び順を保存しました。"); }
+  catch(err){ stat("kListStatus",err.message,true); }
+  busy=false;
+};
+$("kNewBtn").onclick=()=>openKEdit(null);
+$("toSetup3").onclick=openSetup;
+$("kBackBtn").onclick=openKList;
+$("kPick").onclick=()=>$("kFile").click();
+$("kFile").onchange=e=>{ const f=e.target.files[0]; e.target.value=""; if(!f) return; kFileSel=f;
+  $("kPreview").src=URL.createObjectURL(f); $("kPreview").style.display="block"; };
+
+function openKEdit(i){
+  kEditing=i; kFileSel=null; show("vKEdit"); stat("kEditStatus","");
+  const k=i===null?{title:"",alt:"",memo:""}:kIdx.strips[i];
+  $("kEditHead").textContent=i===null?"新しい4コマ":"4コマを編集";
+  $("kTitle").value=k.title||""; $("kAlt").value=k.alt||""; $("kMemo").value=k.memo||"";
+  $("kDelBtn").hidden=i===null;
+  if(i!==null&&k.img){ $("kPreview").src=`${k.img}?v=${k.v||""}`; $("kPreview").style.display="block"; }
+  else { $("kPreview").removeAttribute("src"); $("kPreview").style.display="none"; }
+}
+async function kSave(){
+  if(busy) return;
+  const title=$("kTitle").value.trim();
+  if(!title) return stat("kEditStatus","タイトルを入れてください。",true);
+  if(kEditing===null&&!kFileSel) return stat("kEditStatus","4コマの画像を選んでください。",true);
+  busy=true; $("saveBtn").disabled=true;
+  try{
+    await loadKIdx();
+    let k;
+    if(kEditing===null){
+      const nums=kIdx.strips.map(x=>+(x.id.match(/\d+/)||[0])[0]);
+      const id="k"+String((nums.length?Math.max(...nums):0)+1).padStart(2,"0");
+      k={id,title,date:today(),cast:["l","m"],img:`omake/${id}.jpg`};
+    } else k=kIdx.strips[kEditing];
+    if(!k) throw new Error("一覧が変わっています。開き直してください。");
+    k.title=title; k.alt=$("kAlt").value.trim(); k.memo=$("kMemo").value.trim();
+    const entries=[];
+    if(kFileSel){
+      stat("kEditStatus","画像を送っています…");
+      const sha=await blobOf(await toJpeg(kFileSel));
+      entries.push({path:k.img,mode:"100644",type:"blob",sha}); k.v=Date.now();
+    }
+    if(kEditing===null){ kIdx.strips.push(k); kEditing=kIdx.strips.length-1; }
+    stat("kEditStatus","保存しています…");
+    entries.push(kIdxEntry());
+    await commit(entries,`4コマ：${title} を保存`);
+    kFileSel=null; $("kEditHead").textContent="4コマを編集"; $("kDelBtn").hidden=false;
+    stat("kEditStatus","保存しました。おまけページへの反映には1〜2分かかります。");
+  }catch(e){ stat("kEditStatus",e.message,true); }
+  busy=false; $("saveBtn").disabled=false;
+}
+$("kDelBtn").onclick=async()=>{
+  if(busy||kEditing===null) return;
+  const k=kIdx.strips[kEditing];
+  if(!confirm(`「${k.title}」を削除します。元に戻せません。よろしいですか？`)) return;
+  busy=true; stat("kEditStatus","削除しています…");
+  try{ await loadKIdx(); const cur=kIdx.strips.find(x=>x.id===k.id); kIdx.strips=kIdx.strips.filter(x=>x.id!==k.id);
+    const entries=[kIdxEntry()]; if(cur&&cur.img) entries.unshift({path:cur.img,mode:"100644",type:"blob",sha:null});
+    await commit(entries,`4コマ：${k.title} を削除`); busy=false; openKList(); }
+  catch(e){ busy=false; stat("kEditStatus",e.message,true); }
+};
+
+function openHome(){ let t; try{t=localStorage.getItem(CFG_KEY+":tab")}catch(e){} t==="manga"?openMList():t==="koma"?openKList():openList(); }
 cfg?.token ? openHome() : openSetup();
 </script>
 </body>
