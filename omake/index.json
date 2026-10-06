@@ -41,6 +41,20 @@
       "memo": "",
       "thumb": "omake/k03_t.jpg",
       "v": 1791241507309
+    },
+    {
+      "id": "k04",
+      "title": "おえかき",
+      "date": "2026.10.07",
+      "cast": [
+        "l",
+        "m"
+      ],
+      "img": "omake/k04.jpg",
+      "alt": "",
+      "memo": "",
+      "thumb": "omake/k04_t.jpg",
+      "v": 1791328102516
     }
   ]
 }
