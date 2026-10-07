@@ -48,8 +48,9 @@ textarea{min-height:58vh;line-height:1.9;resize:vertical}
 .tools button{border:1px solid rgba(232,226,238,.25);padding:.4rem .8rem;font-size:.85rem;color:var(--linen-dim)}
 .dock{position:fixed;left:0;right:0;bottom:0;background:var(--moss2);padding:.7rem 1rem calc(.7rem + env(safe-area-inset-bottom,0px));display:flex;gap:.6rem;justify-content:flex-end;box-shadow:0 -10px 30px rgba(0,0,0,.4)}
 .dock .grow{flex:1;align-self:center;font-size:.8rem;color:var(--linen-dim);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.tabs{display:flex;gap:0;margin:0 0 1.2rem;border-bottom:1px solid rgba(232,226,238,.18)}
-.tabs button{padding:.6rem 1.2rem;color:var(--linen-dim);letter-spacing:.2em;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs{display:flex;gap:0;margin:0 0 1.2rem;border-bottom:1px solid rgba(232,226,238,.18);overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{padding:.6rem .95rem;white-space:nowrap;color:var(--linen-dim);letter-spacing:.12em;border-bottom:2px solid transparent;margin-bottom:-1px}
 .tabs button[aria-current="true"]{color:var(--candle);border-color:var(--candle)}
 .row-btns{display:flex;gap:.6rem;flex-wrap:wrap}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:.7rem;margin:1rem 0}
@@ -62,6 +63,21 @@ textarea{min-height:58vh;line-height:1.9;resize:vertical}
 .cell .ops button:disabled{opacity:.25}
 .cell .ops button.x{color:var(--rose)}
 .cover-pv{width:120px;aspect-ratio:707/1000;object-fit:cover;background:var(--moss);display:block;margin:.6rem 0;border:1px solid rgba(214,200,240,.4)}
+.ggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:14px 0}
+@media (min-width:520px){.ggrid{grid-template-columns:repeat(4,1fr)}}
+.ggrid button{padding:0;border:0;background:var(--moss);aspect-ratio:1;overflow:hidden;cursor:pointer;position:relative}
+.ggrid img{width:100%;height:100%;object-fit:cover;display:block}
+.ggrid .tt{position:absolute;left:0;right:0;bottom:0;padding:2px 5px;font-size:10px;line-height:1.4;background:linear-gradient(transparent,rgba(0,0,0,.7));color:#fff;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stage-item{display:grid;grid-template-columns:88px 1fr;gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid rgba(232,226,238,.12)}
+.stage-item img{width:88px;height:88px;object-fit:cover}
+.stage-item input,.stage-item textarea{font-size:16px;padding:.5rem .6rem}
+.stage-item textarea{min-height:3.2em;margin-top:6px}
+.stage-item .rm{grid-column:2;justify-self:end;color:var(--rose);font-size:.8rem;padding:.2rem 0}
+.sel{width:100%;background:var(--moss);border:1px solid rgba(232,226,238,.18);padding:.7rem .8rem;border-radius:2px;font-size:16px;color:inherit}
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.swatches button{width:40px;height:40px;border-radius:50%;border:2px solid transparent;cursor:pointer;background:radial-gradient(circle at 35% 30%,var(--a),var(--b) 80%)}
+.swatches button[aria-pressed="true"]{border-color:#fff;box-shadow:0 0 0 2px var(--candle)}
+.i-pv{display:block;width:100%;max-width:360px;margin:6px 0 8px;border:1px solid rgba(232,226,238,.25)}
 .bar-prog{height:3px;background:var(--moss);margin:.4rem 0}.bar-prog i{display:block;height:100%;width:0;background:var(--candle);transition:width .2s}
 /* プレビュー（小説ページと同じ組版） */
 .pv{position:fixed;inset:0;z-index:20;background:var(--night);display:none;padding:calc(.8rem + env(safe-area-inset-top,0px)) .6rem calc(4rem + env(safe-area-inset-bottom,0px))}
@@ -101,7 +117,7 @@ rt{font-size:.5em}
   <!-- 一覧 -->
   <section class="view" id="vList">
     <div class="top"><h1>書斎</h1><button class="link" id="toSetup">鍵の設定</button></div>
-    <nav class="tabs"><button aria-current="true">小説</button><button data-tab="manga">漫画</button><button data-tab="koma">4コマ</button></nav>
+    <nav class="tabs"><button aria-current="true">小説</button><button data-tab="manga">漫画</button><button data-tab="koma">4コマ</button><button data-tab="if">IF</button></nav>
     <button class="btn fill" id="newBtn">新しい話を書く</button>
     <div class="status" id="listStatus"></div>
     <ul class="list" id="epList"></ul>
@@ -129,7 +145,7 @@ rt{font-size:.5em}
   <!-- 漫画：一覧 -->
   <section class="view" id="vMList">
     <div class="top"><h1>書斎</h1><button class="link" id="toSetup2">鍵の設定</button></div>
-    <nav class="tabs"><button data-tab="novel">小説</button><button aria-current="true">漫画</button><button data-tab="koma">4コマ</button></nav>
+    <nav class="tabs"><button data-tab="novel">小説</button><button aria-current="true">漫画</button><button data-tab="koma">4コマ</button><button data-tab="if">IF</button></nav>
     <div class="row-btns">
       <button class="btn fill" id="mNewBtn">新しい話を追加</button>
       <button class="btn" id="coverBtn">表紙を設定</button>
@@ -162,7 +178,7 @@ rt{font-size:.5em}
   <!-- 4コマ：一覧 -->
   <section class="view" id="vKList">
     <div class="top"><h1>書斎</h1><button class="link" id="toSetup3">鍵の設定</button></div>
-    <nav class="tabs"><button data-tab="novel">小説</button><button data-tab="manga">漫画</button><button aria-current="true">4コマ</button></nav>
+    <nav class="tabs"><button data-tab="novel">小説</button><button data-tab="manga">漫画</button><button aria-current="true">4コマ</button><button data-tab="if">IF</button></nav>
     <button class="btn fill" id="kNewBtn">新しい4コマを追加</button>
     <div class="status" id="kListStatus"></div>
     <p class="note">ここで追加した4コマは、おまけページの最初から入っている3本のあとに並びます。</p>
@@ -186,6 +202,65 @@ rt{font-size:.5em}
     <div class="status" id="kEditStatus"></div>
     <button class="btn danger" id="kDelBtn" hidden>この4コマを削除する</button>
   </section>
+
+  <!-- IF：一覧 -->
+  <section class="view" id="vIList">
+    <div class="top"><h1>書斎</h1><button class="link" id="toSetup5">鍵の設定</button></div>
+    <nav class="tabs"><button data-tab="novel">小説</button><button data-tab="manga">漫画</button><button data-tab="koma">4コマ</button><button aria-current="true">IF</button></nav>
+    <button class="btn fill" id="iNewBtn">新しい世界を追加</button>
+    <div class="status" id="iListStatus"></div>
+    <ul class="list" id="iList"></ul>
+    <a class="link" href="if.html?unlock">IFページを見る（全部ひらいた状態）</a>
+  </section>
+
+  <!-- IF：世界の編集 -->
+  <section class="view" id="vIEdit">
+    <div class="top"><h1 id="iEditHead">世界を編集</h1><button class="link" id="iBackBtn">一覧へ</button></div>
+    <div class="i-normal">
+      <label for="iCode">世界の名前（英語）</label>
+      <input type="text" id="iCode" placeholder="例：CAFE" autocapitalize="characters">
+      <label for="iSub">副題（カードの小さな一文）</label>
+      <input type="text" id="iSub" placeholder="例：雨の日の、いつもの席">
+    </div>
+    <div class="i-final" hidden>
+      <label for="iLockSub">鍵がかかっている時の文言</label>
+      <input type="text" id="iLockSub">
+      <label for="iOpenSub">扉がひらいた後の副題</label>
+      <input type="text" id="iOpenSub">
+    </div>
+    <label for="iCatch">キャッチの一文</label>
+    <input type="text" id="iCatch" placeholder="例：雨の日、毎週同じ席に、あの子が来る。">
+    <div class="i-normal">
+      <label for="iCast">配役</label>
+      <input type="text" id="iCast" placeholder="例：梨里杏（カフェ店員）× 睦美（大学生）">
+      <label for="iSyn">あらすじ</label>
+      <textarea id="iSyn" style="min-height:5em"></textarea>
+      <label>世界の色</label>
+      <div class="swatches" id="iColors"></div>
+      <label for="iLayout">一覧での形</label>
+      <select id="iLayout" class="sel">
+        <option value="">おまかせ（自動）</option>
+        <option value="feature">大きく横長</option>
+        <option value="feature rev">大きく横長（右寄せ）</option>
+        <option value="duo">ふたつ並び</option>
+        <option value="quiet">文字だけ</option>
+        <option value="center">中央に縦長</option>
+      </select>
+    </div>
+    <label>キービジュアル</label>
+    <img id="iKvPv" alt="" class="i-pv" hidden>
+    <button class="btn" id="iKvBtn">画像を選ぶ</button>
+    <input type="file" id="iKvFile" accept="image/*" hidden>
+    <label>漫画（4コマ／1ページ漫画）</label>
+    <img id="iMgPv" alt="" class="i-pv" hidden>
+    <button class="btn" id="iMgBtn">画像を選ぶ</button>
+    <input type="file" id="iMgFile" accept="image/*" hidden>
+    <label for="iSS">ショートストーリー（貼り付けOK）</label>
+    <textarea id="iSS" style="min-height:14em" placeholder="空行で段落が分かれます。"></textarea>
+    <div class="status" id="iEditStatus"></div>
+    <div class="bar-prog" id="iProg" hidden><i></i></div>
+    <button class="btn danger" id="iDelBtn">この世界を削除する</button>
+  </section>
 </div>
 
 <div class="dock" id="dock" hidden>
@@ -204,7 +279,7 @@ const $=id=>document.getElementById(id);
 let cfg=(()=>{try{return JSON.parse(localStorage.getItem(CFG_KEY))}catch(e){return null}})();
 let idx={episodes:[]}, idxSha=null, editing=null, fileSha=null, busy=false;
 
-function show(v){ document.querySelectorAll(".view").forEach(x=>x.classList.toggle("on",x.id===v)); $("dock").hidden=!(v==="vEdit"||v==="vMEdit"||v==="vKEdit"); if(v==="vKEdit") $("dockInfo").textContent="4コマ"; if(v==="vMEdit") $("dockInfo").textContent=`${mItems.length}ページ`; window.scrollTo(0,0); }
+function show(v){ document.querySelectorAll(".view").forEach(x=>x.classList.toggle("on",x.id===v)); $("dock").hidden=!(v==="vEdit"||v==="vMEdit"||v==="vKEdit"||v==="vIEdit"); if(v==="vIEdit") $("dockInfo").textContent="IF"; if(v==="vKEdit") $("dockInfo").textContent="4コマ"; if(v==="vMEdit") $("dockInfo").textContent=`${mItems.length}ページ`; window.scrollTo(0,0); }
 function stat(id,msg,err){ const s=$(id); s.textContent=msg||""; s.classList.toggle("err",!!err); }
 
 /* ===== GitHub API ===== */
@@ -251,7 +326,7 @@ $("setupSave").onclick=async()=>{
 $("toSetup").onclick=openSetup;
 document.addEventListener("click",e=>{ const t=e.target.closest("[data-tab]"); if(!t) return;
   try{localStorage.setItem(CFG_KEY+":tab",t.dataset.tab)}catch(x){}
-  t.dataset.tab==="manga"?openMList():t.dataset.tab==="koma"?openKList():openList(); });
+  t.dataset.tab==="manga"?openMList():t.dataset.tab==="koma"?openKList():t.dataset.tab==="if"?openIList():openList(); });
 
 /* ===== 一覧 ===== */
 async function openList(){
@@ -326,7 +401,7 @@ $("illFile").onchange=async e=>{
   busy=false;
 };
 
-$("saveBtn").onclick=()=>{ if($("vMEdit").classList.contains("on")) mSave(); else if($("vKEdit").classList.contains("on")) kSave(); else nSave(); };
+$("saveBtn").onclick=()=>{ if($("vMEdit").classList.contains("on")) mSave(); else if($("vKEdit").classList.contains("on")) kSave(); else if($("vIEdit").classList.contains("on")) iSave(); else nSave(); };
 async function nSave(){
   if(busy) return;
   const title=$("title").value.trim(), body=$("body").value;
@@ -670,7 +745,120 @@ $("kDelBtn").onclick=async()=>{
   catch(e){ busy=false; stat("kEditStatus",e.message,true); }
 };
 
-function openHome(){ let t; try{t=localStorage.getItem(CFG_KEY+":tab")}catch(e){} t==="manga"?openMList():t==="koma"?openKList():openList(); }
+/* =========================================================
+   IF COLLECTION：世界の追加・編集
+   ========================================================= */
+const IF_DEFAULT = [{"code": "CAFE", "layout": "feature", "sub": "雨の日の、いつもの席", "acc": "#8C6E5A", "acc2": "#3A2E2A", "cast": "梨里杏（カフェ店員）× 睦美（大学生）", "catch": "雨の日、毎週同じ席に、あの子が来る。", "syn": "少し影のあるカフェ店員の梨里杏と、天然でゆるふわな大学生の睦美。雨が降るたび、窓際のいつもの席に彼女はやってくる。", "kv": "", "thumb": "", "manga": "", "ss": "", "id": "w01"}, {"code": "SCHOOL DAYS", "layout": "duo", "sub": "普通の青春を送れた二人", "acc": "#7E93B8", "acc2": "#2A3140", "cast": "リリア × ムゥ（同じクラスの高校生）", "catch": "窓際でいつも眠っている、不思議な子。", "syn": "同じクラスのムゥは、いつも窓際で寝ている不思議ちゃん。世話を焼いているうちに、リリアは毎日ムゥと一緒に帰るようになる。", "kv": "", "thumb": "", "manga": "", "ss": "", "id": "w02"}, {"code": "MAID × LADY", "layout": "duo", "sub": "お嬢様と、専属メイド", "acc": "#B49AC8", "acc2": "#2E2638", "cast": "ムゥ（屋敷のお嬢様）× リリア（専属メイド）", "catch": "「今日は一緒に寝て」「……またですか」", "syn": "屋敷のお嬢様ムゥは、専属メイドのリリアにだけ、なぜか異常になついている。", "kv": "", "thumb": "", "manga": "", "ss": "", "id": "w03"}, {"code": "IDOL", "layout": "feature rev", "sub": "黒と白の、ふたり組ユニット", "acc": "#C7C2D6", "acc2": "#1E1C26", "cast": "リリア（黒担当）× ムゥ（白担当）", "catch": "営業じゃない。たぶん、ずっと前から。", "syn": "黒と白の衣装で並ぶ二人組ユニット。表では「営業百合」と呼ばれているけれど、楽屋の二人は普通に、重たいほど両想い。", "kv": "", "thumb": "", "manga": "", "ss": "", "id": "w04"}, {"code": "ROOMMATES", "layout": "quiet", "sub": "世界観も、事件もない", "acc": "#9DB39A", "acc2": "#28302A", "cast": "リリア × ムゥ（大学生の二人暮らし）", "catch": "ジャージでゲーム、コンビニ飯、同じベッドで寝落ち。", "syn": "何も起きない。誰にも追われない。ただ、幸せなだけの毎日。", "kv": "", "thumb": "", "manga": "", "ss": "", "id": "w05"}, {"code": "WEDDING", "layout": "center", "sub": "説明は、いらない", "acc": "#E6E0EA", "acc2": "#2B2730", "cast": "リリア × ムゥ", "catch": "ずっと、そばに。", "syn": "黒いドレスのリリアと、白いドレスのムゥ。手袋のない手を、ただ普通に繋いでいる。", "kv": "", "thumb": "", "manga": "", "ss": "", "id": "w06"}, {"code": "FLOWER SHOP", "layout": "feature", "sub": "毎週、花を一輪だけ", "acc": "#C99AA6", "acc2": "#3A2830", "cast": "リリア（花屋）× ムゥ（常連客）", "catch": "「いつも一輪だけですね」「うん。好きな人にあげるの」", "syn": "毎週、花を一輪だけ買いに来る常連客。その花が誰のためのものなのか、リリアはまだ知らない。", "kv": "", "thumb": "", "manga": "", "ss": "", "id": "w07"}, {"code": "???", "sub": "すべての世界を見ると、扉がひらきます", "final": true, "acc": "#FFF3DE", "acc2": "#3A3226", "cast": "", "catch": "もし、何も起こらなかった世界なら。", "syn": "", "openSub": "朝のベッドと、ふたり分の朝食", "kv": "", "thumb": "", "manga": "", "ss": "", "id": "final"}];
+const IF_COLORS = [["珈琲","#8C6E5A","#3A2E2A"],["青空","#7E93B8","#2A3140"],["藤","#B49AC8","#2E2638"],["銀","#C7C2D6","#1E1C26"],["若葉","#9DB39A","#28302A"],
+  ["白","#E6E0EA","#2B2730"],["薔薇","#C99AA6","#3A2830"],["朝","#FFF3DE","#3A3226"],["夜","#6E6A9A","#1C1A2A"],["珊瑚","#D7A08C","#3A2A24"],["深海","#5E8C96","#1E2A2E"],["墨","#8A8494","#18161C"]];
+let iIdx={worlds:[]}, iEditing=null, iKvSel=null, iMgSel=null, iColor=null;
+async function loadIIdx(){ const f=await gh("if/index.json"); iIdx=f?JSON.parse(dec(f.content)):{worlds:JSON.parse(JSON.stringify(IF_DEFAULT))};
+  iIdx.worlds=iIdx.worlds||[]; if(!iIdx.worlds.some(w=>w.final)) iIdx.worlds.push(JSON.parse(JSON.stringify(IF_DEFAULT.find(w=>w.final)))); }
+const iIdxEntry=()=>{ const fin=iIdx.worlds.filter(w=>w.final), rest=iIdx.worlds.filter(w=>!w.final); iIdx.worlds=rest.concat(fin);
+  return {path:"if/index.json",mode:"100644",type:"blob",content:JSON.stringify(iIdx,null,2)+"\n"}; };
+function ifLoadImg(file){ return new Promise((ok,ng)=>{ const u=URL.createObjectURL(file), i=new Image(); i.onload=()=>{URL.revokeObjectURL(u);ok(i)}; i.onerror=()=>{URL.revokeObjectURL(u);ng(new Error("画像を読み込めませんでした"))}; i.src=u; }); }
+async function ifEncode(img,maxSide,q){ const sc=Math.min(1,maxSide/Math.max(img.naturalWidth,img.naturalHeight)), w=Math.round(img.naturalWidth*sc), h=Math.round(img.naturalHeight*sc);
+  const c=document.createElement("canvas"); c.width=w; c.height=h; const x=c.getContext("2d"); x.fillStyle="#000"; x.fillRect(0,0,w,h); x.drawImage(img,0,0,w,h);
+  const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",q)); return b64(new Uint8Array(await blob.arrayBuffer())); }
+
+async function openIList(){
+  show("vIList"); stat("iListStatus","読み込んでいます…"); $("iList").innerHTML="";
+  try{ await loadIIdx(); stat("iListStatus",""); renderIList(); }catch(e){ stat("iListStatus",e.message,true); }
+}
+function renderIList(){
+  const rest=iIdx.worlds.filter(w=>!w.final), n=rest.length;
+  $("iList").innerHTML=rest.map((w,i)=>`<li>
+    <button class="t" data-iedit="${w.id}"><span class="no">IF ${String(i+1).padStart(2,"0")}</span>${(w.code||"（名前なし）").replace(/</g,"&lt;")}${w.kv?"":'<span class="note">　画像なし</span>'}</button>
+    <button class="mv" data-iup="${i}" ${i===0?"disabled":""} aria-label="上へ">↑</button>
+    <button class="mv" data-idown="${i}" ${i===n-1?"disabled":""} aria-label="下へ">↓</button></li>`).join("")
+    + `<li><button class="t" data-iedit="final"><span class="no">IF ${String(n+1).padStart(2,"0")}</span>最後の世界（???）<span class="note">　常に一番下</span></button></li>`;
+}
+$("iList").onclick=async e=>{
+  const b=e.target.closest("button"); if(!b||busy) return;
+  if(b.dataset.iedit) return openIEdit(b.dataset.iedit);
+  const i=+(b.dataset.iup??b.dataset.idown), j=b.dataset.iup!==undefined?i-1:i+1;
+  busy=true; stat("iListStatus","並び順を保存しています…");
+  try{ await loadIIdx(); const rest=iIdx.worlds.filter(w=>!w.final), fin=iIdx.worlds.filter(w=>w.final);
+    [rest[i],rest[j]]=[rest[j],rest[i]]; iIdx.worlds=rest.concat(fin);
+    await commit([iIdxEntry()],"IF：世界の順番を変更"); renderIList(); stat("iListStatus","並び順を保存しました。"); }
+  catch(err){ stat("iListStatus",err.message,true); }
+  busy=false;
+};
+$("iNewBtn").onclick=()=>openIEdit(null);
+$("toSetup5").onclick=openSetup;
+$("iBackBtn").onclick=openIList;
+function renderColors(){
+  $("iColors").innerHTML=IF_COLORS.map(([n,a,b])=>`<button type="button" style="--a:${a};--b:${b}" data-c="${a}|${b}" aria-label="${n}" title="${n}" aria-pressed="${iColor===a+"|"+b}"></button>`).join("");
+}
+$("iColors").onclick=e=>{ const b=e.target.closest("[data-c]"); if(!b) return; iColor=b.dataset.c; renderColors(); };
+function pv(id,src){ const el=$(id); if(src){ el.src=src; el.hidden=false; } else { el.removeAttribute("src"); el.hidden=true; } }
+function openIEdit(id){
+  iEditing=id; iKvSel=null; iMgSel=null; show("vIEdit"); stat("iEditStatus",""); prog("iProg",0,0);
+  const w = id===null ? {code:"",sub:"",catch:"",cast:"",syn:"",layout:"",ss:"",acc:IF_COLORS[0][1],acc2:IF_COLORS[0][2]} : iIdx.worlds.find(x=>x.id===id);
+  const fin=!!(w&&w.final);
+  document.querySelectorAll(".i-normal").forEach(el=>el.hidden=fin); document.querySelectorAll(".i-final").forEach(el=>el.hidden=!fin);
+  $("iEditHead").textContent = id===null ? "新しい世界" : fin ? "最後の世界（???）" : "世界を編集";
+  $("iDelBtn").hidden = id===null || fin;
+  $("iCode").value=w.code||""; $("iSub").value=w.sub||""; $("iCatch").value=w.catch||""; $("iCast").value=w.cast||""; $("iSyn").value=w.syn||"";
+  $("iLayout").value=w.layout||""; $("iSS").value=w.ss||""; $("iLockSub").value=w.sub||""; $("iOpenSub").value=w.openSub||"";
+  iColor=(w.acc||IF_COLORS[0][1])+"|"+(w.acc2||IF_COLORS[0][2]); renderColors();
+  const v=w.v?`?v=${w.v}`:""; pv("iKvPv",w.kv?w.kv+v:""); pv("iMgPv",w.manga?w.manga+v:"");
+}
+$("iKvBtn").onclick=()=>$("iKvFile").click();
+$("iMgBtn").onclick=()=>$("iMgFile").click();
+$("iKvFile").onchange=e=>{ const f=e.target.files[0]; e.target.value=""; if(!f) return; iKvSel=f; pv("iKvPv",URL.createObjectURL(f)); };
+$("iMgFile").onchange=e=>{ const f=e.target.files[0]; e.target.value=""; if(!f) return; iMgSel=f; pv("iMgPv",URL.createObjectURL(f)); };
+
+async function iSave(){
+  if(busy) return;
+  const fin = iEditing==="final";
+  if(!fin && !$("iCode").value.trim()) return stat("iEditStatus","世界の名前を入れてください。",true);
+  busy=true; $("saveBtn").disabled=true;
+  try{
+    await loadIIdx();
+    let w;
+    if(iEditing===null){
+      const nums=iIdx.worlds.filter(x=>!x.final).map(x=>+(String(x.id).match(/\d+/)||[0])[0]);
+      w={id:"w"+String((nums.length?Math.max(...nums):0)+1).padStart(2,"0"),kv:"",thumb:"",manga:""};
+      const fi=iIdx.worlds.findIndex(x=>x.final); iIdx.worlds.splice(fi<0?iIdx.worlds.length:fi,0,w);
+    } else w=iIdx.worlds.find(x=>x.id===iEditing);
+    if(!w) throw new Error("一覧が変わっています。開き直してください。");
+    w.catch=$("iCatch").value.trim(); w.ss=$("iSS").value.replace(/\r\n?/g,"\n").trim();
+    if(fin){ w.sub=$("iLockSub").value.trim(); w.openSub=$("iOpenSub").value.trim(); }
+    else { w.code=$("iCode").value.trim(); w.sub=$("iSub").value.trim(); w.cast=$("iCast").value.trim(); w.syn=$("iSyn").value.trim();
+      w.layout=$("iLayout").value; [w.acc,w.acc2]=iColor.split("|"); }
+    const entries=[], n=(iKvSel?2:0)+(iMgSel?1:0); let done=0;
+    if(iKvSel){ stat("iEditStatus","キービジュアルを送っています…");
+      const img=await ifLoadImg(iKvSel);
+      const s1=await blobOf(await ifEncode(img,2000,.86)); prog("iProg",++done,n+1);
+      const s2=await blobOf(await ifEncode(img,900,.8)); prog("iProg",++done,n+1);
+      w.kv=`if/${w.id}_kv.jpg`; w.thumb=`if/${w.id}_t.jpg`;
+      entries.push({path:w.kv,mode:"100644",type:"blob",sha:s1},{path:w.thumb,mode:"100644",type:"blob",sha:s2}); }
+    if(iMgSel){ stat("iEditStatus","漫画を送っています…");
+      const s3=await blobOf(await ifEncode(await ifLoadImg(iMgSel),2000,.86)); prog("iProg",++done,n+1);
+      w.manga=`if/${w.id}_manga.jpg`; entries.push({path:w.manga,mode:"100644",type:"blob",sha:s3}); }
+    if(n) w.v=Date.now();
+    entries.push(iIdxEntry()); stat("iEditStatus","保存しています…");
+    await commit(entries,`IF：${fin?"最後の世界":w.code} を保存`);
+    prog("iProg",1,1); iKvSel=null; iMgSel=null; iEditing=w.id;
+    $("iEditHead").textContent = fin ? "最後の世界（???）" : "世界を編集"; $("iDelBtn").hidden=fin;
+    stat("iEditStatus","保存しました。IFページへの反映には1〜2分かかります。");
+  }catch(e){ stat("iEditStatus",e.message,true); }
+  busy=false; $("saveBtn").disabled=false;
+}
+$("iDelBtn").onclick=async()=>{
+  if(busy||!iEditing||iEditing==="final") return;
+  const w=iIdx.worlds.find(x=>x.id===iEditing); if(!w) return;
+  if(!confirm(`「${w.code}」の世界を削除します。元に戻せません。よろしいですか？`)) return;
+  busy=true; stat("iEditStatus","削除しています…");
+  try{ await loadIIdx(); const cur=iIdx.worlds.find(x=>x.id===w.id); iIdx.worlds=iIdx.worlds.filter(x=>x.id!==w.id);
+    const entries=[iIdxEntry()];
+    if(cur) ["kv","thumb","manga"].forEach(k=>{ if(cur[k] && /^if\//.test(cur[k])) entries.unshift({path:cur[k],mode:"100644",type:"blob",sha:null}); });
+    await commit(entries,`IF：${w.code} を削除`); busy=false; openIList(); }
+  catch(e){ busy=false; stat("iEditStatus",e.message,true); }
+};
+
+function openHome(){ let t; try{t=localStorage.getItem(CFG_KEY+":tab")}catch(e){} t==="manga"?openMList():t==="koma"?openKList():t==="if"?openIList():openList(); }
 cfg?.token ? openHome() : openSetup();
 </script>
 </body>
