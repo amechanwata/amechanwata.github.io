@@ -63,18 +63,19 @@
     },
     {
       "code": "ROOMMATES",
-      "layout": "quiet",
+      "layout": "duo",
       "sub": "世界観も、事件もない",
       "acc": "#9DB39A",
       "acc2": "#28302A",
       "cast": "リリア × ムゥ（大学生の二人暮らし）",
       "catch": "ジャージでゲーム、コンビニ飯、同じベッドで寝落ち。",
       "syn": "何も起きない。誰にも追われない。ただ、幸せなだけの毎日。",
-      "kv": "",
-      "thumb": "",
+      "kv": "if/w05_kv.jpg",
+      "thumb": "if/w05_t.jpg",
       "manga": "",
       "ss": "",
-      "id": "w05"
+      "id": "w05",
+      "v": 1791401978106
     },
     {
       "code": "WEDDING",
